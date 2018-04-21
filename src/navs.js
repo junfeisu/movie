@@ -1,6 +1,8 @@
 // <!-- auto generated navs start -->
 const autoGenHeaderNavs = [];
-const autoGenAsideNavs = [];
+const autoGenAsideNavs = [
+  { text: 'Nav16', to: '/movieDetail', icon: 'nav-list' },
+];
 
 // <!-- auto generated navs end -->
 
