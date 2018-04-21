@@ -5,7 +5,7 @@
   "homepage": "https://alibaba.github.io/ice/scaffold-preview/ice-design-cms.html",
   "dependencies": {
     "@antv/data-set": "^0.8.5",
-    "@icedesign/base": "^0.2.1",
+    "@icedesign/base": "^0.1.4",
     "@icedesign/container": "^0.1.2",
     "@icedesign/form-binder": "^0.1.4",
     "@icedesign/icon": "^0.1.1",
@@ -14,7 +14,7 @@
     "@icedesign/menu": "^0.1.0",
     "@icedesign/skin": "^0.1.0",
     "axios": "^0.17.1",
-    "bizcharts": "3.1.0",
+    "bizcharts": "^3.1.5",
     "classnames": "^2.2.5",
     "enquire-js": "^0.1.2",
     "foundation-symbol": "^0.1.0",

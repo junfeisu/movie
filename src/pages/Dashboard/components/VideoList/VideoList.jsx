@@ -1,6 +1,7 @@
 /* eslint jsx-a11y/media-has-caption: 0, jsx-a11y/no-noninteractive-element-interactions: 0 */
 import React, { Component } from 'react';
 import { Grid } from '@icedesign/base';
+import { Link } from 'react-router';
 
 const { Row, Col } = Grid;
 
@@ -138,32 +139,21 @@ export default class VideoList extends Component {
                       src="https://img.alicdn.com/tfs/TB1E0sbmpmWBuNjSspdXXbugXXa-84-84.png"
                       style={styles.video}
                     />
-                    {/* <video
-                      src={item.videoUrl}
-                      controls={false}
-                      onClick={() => this.handleOpen(item)}
-                    >
-                      您的浏览器不支持播放该视频！
-                    </video> */}
                   </div>
-
                   <div style={styles.videoInfo}>
                     <h5 style={styles.videoTitle}>{item.videoType}</h5>
                     <div style={styles.videoDesc}>
                       <div>服务包含内容：</div>
                       <div dangerouslySetInnerHTML={{ __html: item.desc }} />
                     </div>
-                    <div style={styles.videoFee}>
-                      单支 ￥ <strong style={styles.fee}>{item.fee}</strong> 起
-                    </div>
-                    <a href="#" style={styles.videoLink}>
+                    <Link to="/movieDetail" style={styles.videoLink}>
                       选座购票{' '}
                       <img
                         alt=""
                         src="https://img.alicdn.com/tfs/TB13yHPmrSYBuNjSspiXXXNzpXa-40-40.png"
                         style={styles.arrowIcon}
                       />
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </Col>
@@ -180,7 +170,7 @@ const styles = {
     margin: '20px 0',
   },
   videoCate: {
-    margin: '0 10px',
+    margin: '0',
     background: '#fff',
     padding: '0 14px',
     borderRadius: '4px',
@@ -197,7 +187,7 @@ const styles = {
     margin: '20px 0 0',
     display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
   },
   videoCarditem: {
     marginBottom: '20px',
@@ -229,20 +219,11 @@ const styles = {
   },
   videoDesc: {
     padding: '0 0 20px',
-    margin: '0 0 20px',
     fontSize: '14px',
     color: '#999',
     lineHeight: '20px',
     height: '120px',
     overflow: 'hidden',
-  },
-  videoFee: {
-    position: 'absolute',
-    bottom: '20px',
-    fontSize: '14px',
-  },
-  fee: {
-    fontSize: '18px',
   },
   videoLink: {
     position: 'absolute',

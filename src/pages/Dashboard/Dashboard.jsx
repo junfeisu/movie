@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import SimpleSlider from './components/SimpleSlider';
 import VideoList from './components/VideoList';
+import TopActiveChart from './components/TopActiveChart';
 
 import './Dashboard.scss';
 
@@ -18,6 +19,7 @@ export default class Dashboard extends Component {
       <div className="dashboard-page">
         <SimpleSlider />
         <VideoList />
+        <TopActiveChart />
       </div>
     );
   }
