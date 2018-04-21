@@ -14,7 +14,7 @@ export default class RightContentDisplay extends Component {
         <div className="right-content-display-content" style={styles.content}>
           <div style={styles.col}>
             <img
-              src="https://img.alicdn.com/tfs/TB1MgyDjsLJ8KJjy0FnXXcFDpXa-618-1046.png"
+              src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2516079193.webp"
               alt="img"
               style={styles.image}
             />
@@ -34,9 +34,8 @@ export default class RightContentDisplay extends Component {
 const styles = {
   container: {
     width: '100%',
-    maxWidth: '1080px',
     margin: '0 auto',
-    padding: '80px 0',
+    padding: '40px 0',
   },
   content: {
     display: 'flex',
@@ -46,7 +45,6 @@ const styles = {
   },
   col: {
     width: '48%',
-    padding: '0 1%',
   },
   title: {
     fontSize: '28px',
@@ -58,7 +56,6 @@ const styles = {
   },
   image: {
     width: '100%',
-    margin: '0 auto',
     display: 'block',
     maxWidth: '360px',
   },
