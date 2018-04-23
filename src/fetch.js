@@ -8,9 +8,9 @@ const fetch = ({ host = 'http://192.168.2.200:8000', url = '', method = 'GET', d
             data: data,
             params: params
         }).then(response => {
-            resolve(response)
+            resolve(response.data)
         }).catch(err => {
-            reject(err)
+            reject(err.response)
         })
     })
 }

@@ -48,7 +48,7 @@ export default class UserLogin extends Component {
         }
       })
       console.log(loginResult.data)
-      const { data, message, status } = loginResult.data
+      const { data, message, status } = loginResult
       if (status) {
         window.sessionStorage.setItem('user', JSON.stringify(data))
         hashHistory.push('/');
@@ -56,7 +56,7 @@ export default class UserLogin extends Component {
         toastr.error(message)
       }
     } catch (err) {
-      toastr.error(err.response.data.message)
+      toastr.error(err.data.message)
     }
   }
 

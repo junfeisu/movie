@@ -87,7 +87,30 @@ export default class VideoList extends Component {
       index: 0,
       dialogVisible: false,
       dialogVideo: {},
+      movies: []
     };
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.willPlayMovies !== this.props.willPlayMovies) {
+      let data = this.state.movies
+      data.push({
+        title: '即将上映',
+        value: nextProps.willPlayMovies
+      })
+      this.setState({
+        movies: data
+      })
+    } else if (nextProps.playingMovies !== this.props.playingMovies) {
+      let data = this.state.movies
+      data.unshift({
+        title: '正在上映',
+        value: nextProps.playingMovies
+      })
+      this.setState({
+        movies: data
+      })
+    }
   }
 
   handleCateChange = (index) => {
@@ -97,10 +120,12 @@ export default class VideoList extends Component {
   };
 
   render() {
+    const { movies, index } = this.state
+    console.log(movies)
     return (
       <div style={styles.videoListContainer}>
         <ul style={styles.videoCate}>
-          {data.map((item, index) => {
+          {movies.map((item, index) => {
             const activeStyle =
               this.state.index === index ? styles.active : null;
             return (
@@ -116,22 +141,22 @@ export default class VideoList extends Component {
         </ul>
 
         <Row style={styles.videoList} gutter="20" wrap="true">
-          {data[this.state.index].value.map((item, index) => {
+          {movies[index].value.map((item, index) => {
             return (
               <Col xxs="24" s="12" l="6" key={index}>
                 <div style={styles.videoCarditem}>
                   <div style={{ position: 'relative' }}>
                     <img
                       alt=""
-                      src="https://img.alicdn.com/tfs/TB1E0sbmpmWBuNjSspdXXbugXXa-84-84.png"
+                      src={item.images.small}
                       style={styles.video}
                     />
                   </div>
                   <div style={styles.videoInfo}>
-                    <h5 style={styles.videoTitle}>{item.videoType}</h5>
+                    <h5 style={styles.videoTitle}>{item.title}</h5>
                     <div style={styles.videoDesc}>
                       <div>服务包含内容：</div>
-                      <div dangerouslySetInnerHTML={{ __html: item.desc }} />
+                      <div dangerouslySetInnerHTML={{ __html: item.subtype }} />
                     </div>
                     <Link to="/movieDetail" style={styles.videoLink}>
                       选座购票{' '}
