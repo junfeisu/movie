@@ -11,21 +11,7 @@ const customHeaderNavs = [
     text: '首页',
     to: '/',
     icon: 'home',
-  },
-  {
-    text: '反馈',
-    to: 'https://github.com/alibaba/ice',
-    external: true,
-    newWindow: true,
-    icon: 'message',
-  },
-  {
-    text: '帮助',
-    to: 'https://alibaba.github.io/ice',
-    external: true,
-    newWindow: true,
-    icon: 'bangzhu',
-  },
+  }
 ];
 
 const customAsideNavs = [

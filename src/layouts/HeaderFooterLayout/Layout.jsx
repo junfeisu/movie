@@ -21,7 +21,21 @@ export default class BasicLayout extends PureComponent {
 
     this.state = {
       isMobile: false,
+      user: null
     };
+  }
+
+  judgeLoginStatus = () => {
+    let user = JSON.parse(window.sessionStorage.getItem('user'))
+    if (user) {
+      this.setState({
+        user: user
+      })
+    }
+  }
+
+  componentWillMount() {
+    this.judgeLoginStatus();
   }
 
   componentDidMount() {
@@ -49,7 +63,7 @@ export default class BasicLayout extends PureComponent {
           'ice-design-layout': true,
         })}
       >
-        <Header theme={theme} isMobile={this.state.isMobile} />
+        <Header theme={theme} isMobile={this.state.isMobile} user={this.state.user} />
         <Layout.Main className="ice-design-layout-body">
           {this.props.children}
         </Layout.Main>

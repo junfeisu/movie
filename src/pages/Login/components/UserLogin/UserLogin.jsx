@@ -60,6 +60,10 @@ export default class UserLogin extends Component {
     }
   }
 
+  componentWillMount () {
+    window.sessionStorage.removeItem('user')
+  }
+
   formChange = (value) => {
     this.setState({
       value,
