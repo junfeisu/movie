@@ -8,6 +8,8 @@ import {
   FormError as IceFormError,
 } from '@icedesign/form-binder';
 import IceIcon from '@icedesign/icon';
+import fetch from '../../../../fetch';
+import toastr from 'toastr';
 import './UserLogin.scss';
 
 const { Row, Col } = Grid;
@@ -26,30 +28,41 @@ export default class UserLogin extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: {
-        account: undefined,
-        password: undefined,
-        checkbox: false,
-      },
+      username: undefined,
+      password: undefined,
+      checkbox: false,
     };
+  }
+
+  login = async (e) => {
+    e.preventDefault()
+
+    const { username, password } = this.state
+    try {
+      const loginResult = await fetch({
+        url: '/user/login',
+        method: 'POST',
+        data: {
+          username: username,
+          password: password
+        }
+      })
+      console.log(loginResult.data)
+      const { data, message, status } = loginResult.data
+      if (status) {
+        window.sessionStorage.setItem('user', JSON.stringify(data))
+        hashHistory.push('/');
+      } else {
+        toastr.error(message)
+      }
+    } catch (err) {
+      toastr.error(err.response.data.message)
+    }
   }
 
   formChange = (value) => {
     this.setState({
       value,
-    });
-  };
-
-  handleSubmit = (e) => {
-    e.preventDefault();
-    this.refs.form.validateAll((errors, values) => {
-      if (errors) {
-        console.log('errors', errors);
-        return;
-      }
-      console.log('values:', values);
-      console.log(this.props);
-      hashHistory.push('/');
     });
   };
 
@@ -82,7 +95,11 @@ export default class UserLogin extends Component {
                       style={styles.inputIcon}
                     />
                     <IceFormBinder name="account" required message="必填">
-                      <Input maxLength={20} placeholder="会员名/邮箱/手机号" />
+                      <Input maxLength={20} placeholder="会员名/邮箱/手机号" onChange={(val, evt) => {
+                        this.setState({
+                          username: val
+                        })
+                      }}/>
                     </IceFormBinder>
                   </Col>
                   <Col>
@@ -98,7 +115,9 @@ export default class UserLogin extends Component {
                       style={styles.inputIcon}
                     />
                     <IceFormBinder name="password" required message="必填">
-                      <Input htmlType="password" placeholder="密码" />
+                      <Input htmlType="password" placeholder="密码" onChange={(val ,evt) => {
+                        this.setState({password: val})
+                      }}/>
                     </IceFormBinder>
                   </Col>
                   <Col>
@@ -117,7 +136,7 @@ export default class UserLogin extends Component {
                 <Row style={styles.formItem}>
                   <Button
                     type="primary"
-                    onClick={this.handleSubmit}
+                    onClick={this.login}
                     style={styles.submitBtn}
                   >
                     登 录

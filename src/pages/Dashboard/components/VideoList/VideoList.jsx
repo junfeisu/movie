@@ -96,19 +96,6 @@ export default class VideoList extends Component {
     });
   };
 
-  handleOpen = (item) => {
-    this.setState({
-      dialogVisible: true,
-      dialogVideo: item,
-    });
-  };
-
-  handleColse = () => {
-    this.setState({
-      dialogVisible: false,
-    });
-  };
-
   render() {
     return (
       <div style={styles.videoListContainer}>
@@ -128,7 +115,7 @@ export default class VideoList extends Component {
           })}
         </ul>
 
-        <Row style={styles.videoList} gutter="20" wrap>
+        <Row style={styles.videoList} gutter="20" wrap="true">
           {data[this.state.index].value.map((item, index) => {
             return (
               <Col xxs="24" s="12" l="6" key={index}>
