@@ -2,6 +2,8 @@
 import React, { Component } from 'react';
 import { Grid } from '@icedesign/base';
 import { Link } from 'react-router';
+import fetch from '../../../../fetch';
+import toastr from 'toastr';
 
 const { Row, Col } = Grid;
 
@@ -87,45 +89,64 @@ export default class VideoList extends Component {
       index: 0,
       dialogVisible: false,
       dialogVideo: {},
-      movies: []
+      movies: [],
+      titles: ['正在热映', '即将上映']
     };
   }
 
-  componentWillReceiveProps (nextProps) {
-    if (nextProps.willPlayMovies !== this.props.willPlayMovies) {
-      let data = this.state.movies
-      data.push({
-        title: '即将上映',
-        value: nextProps.willPlayMovies
+  fetchPlayingMovies = async () => {
+    try {
+      const playingMovies = await fetch({
+        host: 'https://api.douban.com',
+        url: '/v2/movie/in_theaters',
+        method: 'OPTIONS'
       })
+
+      console.log('playing success')
+
       this.setState({
-        movies: data
+        movies: playingMovies.subjects.slice(0, 4)
       })
-    } else if (nextProps.playingMovies !== this.props.playingMovies) {
-      let data = this.state.movies
-      data.unshift({
-        title: '正在上映',
-        value: nextProps.playingMovies
-      })
-      this.setState({
-        movies: data
-      })
+    } catch (err) {
+      toastr.error(err)
     }
+  }
+
+  fetchWillPlayMovies = async () => {
+    try {
+      const willPlayMovies = await fetch({
+        host: 'https://api.douban.com',
+        url: '/v2/movie/coming_soon',
+        method: 'OPTIONS'
+      })
+
+      this.setState({
+        movies: willPlayMovies.subjects.slice(0, 4)
+      })
+    } catch (err) {
+      toastr.error(err)
+    }
+  }
+
+  componentWillMount () {
+    this.fetchPlayingMovies()
   }
 
   handleCateChange = (index) => {
     this.setState({
       index,
     });
+
+    index !== 0 ? this.fetchWillPlayMovies() : this.fetchPlayingMovies()
   };
 
   render() {
-    const { movies, index } = this.state
+    const { titles, movies, index } = this.state
     console.log(movies)
     return (
       <div style={styles.videoListContainer}>
         <ul style={styles.videoCate}>
-          {movies.map((item, index) => {
+          {titles.map((item, index) => {
             const activeStyle =
               this.state.index === index ? styles.active : null;
             return (
@@ -134,29 +155,37 @@ export default class VideoList extends Component {
                 style={{ ...styles.videoCateItem, ...activeStyle }}
                 onClick={() => this.handleCateChange(index)}
               >
-                {item.title}
+                {item}
               </li>
             );
           })}
         </ul>
 
         <Row style={styles.videoList} gutter="20" wrap="true">
-          {movies[index].value.map((item, index) => {
+          {movies.map((item, index) => {
             return (
               <Col xxs="24" s="12" l="6" key={index}>
                 <div style={styles.videoCarditem}>
-                  <div style={{ position: 'relative' }}>
+                  <div style={{ position: 'relative', height: '420px', overflow: 'hidden' }}>
                     <img
                       alt=""
                       src={item.images.small}
-                      style={styles.video}
+                      style={styles.poster}
                     />
                   </div>
                   <div style={styles.videoInfo}>
                     <h5 style={styles.videoTitle}>{item.title}</h5>
                     <div style={styles.videoDesc}>
-                      <div>服务包含内容：</div>
-                      <div dangerouslySetInnerHTML={{ __html: item.subtype }} />
+                      <div>导演：{item.directors.map(item => {
+                        return item.name + ' '
+                      })}</div>
+                      <div>主演：{item.casts.map(item => {
+                        return item.name + ' '
+                      })}</div>
+                      <div>类型：{item.genres.map(item => {
+                        return item + ' '
+                      })}</div>
+                      <div>时间：{item.year}</div>
                     </div>
                     <Link to="/movieDetail" style={styles.videoLink}>
                       选座购票{' '}
@@ -211,9 +240,10 @@ const styles = {
     border: '1px solid #FF5D38',
     borderRadius: '50px',
   },
-  video: {
+  poster: {
     display: 'block',
     width: '100%',
+    height: '150%',
     cursor: 'pointer',
     borderRadius: '4px',
   },

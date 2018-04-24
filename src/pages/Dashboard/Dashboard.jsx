@@ -14,46 +14,7 @@ export default class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      palyingMovies: [],
-      willPlayMovies: []
     };
-  }
-
-  fetchPlayingMovies =  async () => {
-    try {
-      const palyingMovies = await fetch({
-        host: 'https://api.douban.com',
-        url: '/v2/movie/in_theaters',
-        method: 'OPTIONS'
-      })
-
-      this.setState({
-        palyingMovies: palyingMovies.subjects.slice(0, 4)
-      })
-    } catch (err) {
-      toastr.error(err)
-    }
-  }
-
-  fetchWillPlayMovies = async () => {
-    try {
-      const willPlayMovies = await fetch({
-        host: 'https://api.douban.com',
-        url: '/v2/movie/coming_soon',
-        method: 'OPTIONS'
-      })
-
-      this.setState({
-        willPlayMovies: willPlayMovies.subjects.slice(0, 4)
-      })
-    } catch (err) {
-      toastr.error(err)
-    }
-  }
-
-  componentWillMount () {
-    this.fetchPlayingMovies()
-    this.fetchWillPlayMovies()
   }
 
   render() {
@@ -61,7 +22,7 @@ export default class Dashboard extends Component {
     return (
       <div className="dashboard-page">
         {/* <SimpleSlider /> */}
-        <VideoList willPlayMovies={willPlayMovies} palyingMovies={palyingMovies}/>
+        <VideoList/>
         <TopActiveChart />
       </div>
     );
