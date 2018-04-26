@@ -142,7 +142,6 @@ export default class VideoList extends Component {
 
   render() {
     const { titles, movies, index } = this.state
-    console.log(movies)
     return (
       <div style={styles.videoListContainer}>
         <ul style={styles.videoCate}>

@@ -12,18 +12,22 @@ export default class RightContentDisplay extends Component {
     return (
       <div className="right-content-display" style={styles.container}>
         <div className="right-content-display-content" style={styles.content}>
-          <div style={styles.col}>
+          <div style={{marginRight: '80px'}}>
             <img
               src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2516079193.webp"
               alt="img"
               style={styles.image}
             />
           </div>
-          <div style={styles.col}>
-            <h2 style={styles.title}>功能描述</h2>
-            <p style={styles.description}>
-              功能描述的文案，功能描述的文案功能描述的文案功能描述的文案
-            </p>
+          <div style={styles.desc}>
+            <div style={styles.descItem}>导演：布拉德佩顿</div>
+            <div style={styles.descItem}>编剧：布拉德佩顿</div>
+            <div style={styles.descItem}>主演：布拉德佩顿</div>
+            <div style={styles.descItem}>类型：动作/科幻/冒险</div>
+            <div style={styles.descItem}>制片国家：中国大陆</div>
+            <div style={styles.descItem}>上映时间：2018-05-09</div>
+            <div style={styles.descItem}>语言：英语</div>
+            <div style={styles.descItem}>片长：107分钟</div>
           </div>
         </div>
       </div>
@@ -40,19 +44,16 @@ const styles = {
   content: {
     display: 'flex',
     position: 'relative',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     overflow: 'hidden',
+    justifyContent: 'flex-start',
   },
-  col: {
-    width: '48%',
+  desc: {
+    fontSize: '18px',
+    color: '#ffffff'
   },
-  title: {
-    fontSize: '28px',
-    fontWeight: 'bold',
-  },
-  description: {
-    color: '#999',
-    lineHeight: '22px',
+  descItem: {
+    marginBottom: '10px'
   },
   image: {
     width: '100%',
