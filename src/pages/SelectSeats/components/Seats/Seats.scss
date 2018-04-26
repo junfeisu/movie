@@ -6,7 +6,8 @@
     margin-right: 5px;
     text-align: center;
     line-height: 30px;
-    cursor: pointer
+    cursor: pointer;
+    border-radius: 4px;
 }
 
 .seat-item-unsale {
@@ -21,4 +22,32 @@
 .seat-item-selected {
     background: gray;
     color: #ffffff;
+}
+
+.selected-seats-info {
+    border-left: 1px solid #cccccc;
+    color: #ffffff;
+    font-size: 16px;
+    margin-left: 20px;
+    padding-left: 20px;
+}
+
+.seats {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.seat {
+    display: block;
+    width: 60px;
+    height: 30px;
+    border: 1px solid #cccccc;
+    text-align: center;
+    line-height: 30px;
+    margin-left: 10px;
+    &:first-child {
+        margin-left: 0;
+    }
 }
