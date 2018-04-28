@@ -1,9 +1,21 @@
+.seats {
+    display: flex;
+    justify-content: space-between;
+}
+
+.seats-container {
+    display: flex;
+    width: 40%;
+    height: 400px;
+    justify-content: center;
+}
+
 .seat-item {
     font-size: 14px;
     color: #000000;
     width: 30px;
     height: 30px;
-    margin-right: 5px;
+    margin-right: 10px;
     text-align: center;
     line-height: 30px;
     cursor: pointer;
@@ -25,29 +37,63 @@
 }
 
 .selected-seats-info {
-    border-left: 1px solid #cccccc;
-    color: #ffffff;
+    width: 354px;
     font-size: 16px;
-    margin-left: 20px;
+    background: #fff5f5;
     padding-left: 20px;
 }
 
-.seats {
+.selected-seats {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    align-items: center;
+}
+
+.seats-list {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+.seats-row {
+    display: flex;
+    height: 30px;
+    margin-top: 10px;
+    &:first-child {
+        margin-top: 0;
+    }
 }
 
 .seat {
     display: block;
-    width: 60px;
+    width: 65px;
     height: 30px;
     border: 1px solid #cccccc;
     text-align: center;
     line-height: 30px;
     margin-left: 10px;
-    &:first-child {
+    margin-bottom: 5px;
+    &:nth-child(4n + 1) {
         margin-left: 0;
+    }
+}
+
+.tips {
+    width: 100%;
+    border-top: 1px solid #cccccc;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.tip-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 10px;
+    &:last-child {
+        margin-right: 0
     }
 }

@@ -2,101 +2,30 @@ import React, { Component } from 'react';
 import { div } from 'gl-matrix/src/gl-matrix/vec2';
 import Toastr from 'toastr';
 import { copy } from 'mi-elegant';
-import { Button } from '@icedesign/base'
+import { Button } from '@icedesign/base';
+import fetch from '../../../../fetch';
 
 import './Seats.scss';
+import seats from './seats.json';
 
 export default class Seats extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            seats: [
-                [{
-                    saled: true,
-                    selected: false,
-                    seat_row: 1,
-                    seat_col: 1
-                }, {
-                    saled: false,
-                    selected: false,
-                    seat_row: 1,
-                    seat_col: 2
-                }, {
-                    saled: false,
-                    selected: false,
-                    seat_row: 1,
-                    seat_col: 3
-                }, {
-                    saled: true,
-                    selected: false,
-                    seat_row: 1,
-                    seat_col: 4
-                }, {
-                    saled: false,
-                    selected: false,
-                    seat_row: 1,
-                    seat_col: 5
-                }, {
-                    saled: false,
-                    selected: false,
-                    seat_row: 1,
-                    seat_col: 6
-                }, {
-                    saled: false,
-                    selected: false,
-                    seat_row: 1,
-                    seat_col: 7
-                }],
-                [{
-                    saled: false,
-                    selected: false,
-                    seat_row: 2,
-                    seat_col: 1
-                }, {
-                    saled: false,
-                    selected: false,
-                    seat_row: 2,
-                    seat_col: 2
-                }, {
-                    saled: false,
-                    selected: false,
-                    seat_row: 2,
-                    seat_col: 3
-                }, {
-                    saled: false,
-                    selected: false,
-                    seat_row: 2,
-                    seat_col: 4
-                }, {
-                    saled: false,
-                    selected: false,
-                    seat_row: 2,
-                    seat_col: 5
-                }],
-                [{
-                    saled: false,
-                    selected: false,
-                    seat_row: 3,
-                    seat_col: 1
-                }, {
-                    saled: false,
-                    selected: false,
-                    seat_row: 3,
-                    seat_col: 2
-                }, {
-                    saled: false,
-                    selected: false,
-                    seat_row: 3,
-                    seat_col: 4
-                }, {
-                    saled: false,
-                    selected: false,
-                    seat_row: 3,
-                    seat_col: 5
-                }],
-            ],
+            seats: seats,
             selectedSeats: []
         };
+    }
+
+    getArrange = async () => {
+        const arranges = await fetch({
+            url: '/arrange/search',
+            method: 'POST',
+            data: {
+                arrangeId: this.props.arrangeId 
+            }
+        })
+        console.log(arranges)
     }
 
     buyTickets = async () => {
@@ -137,41 +66,67 @@ export default class Seats extends Component {
         }
     }
 
+    componentWillMount () {
+        this.getArrange()
+    }
+
     render() {
         const { seats, selectedSeats } = this.state
         return (
-            <div style={styles.seatsContainer}>
-                <div style={styles.rowNumContainer}>
-                    {
-                        seats.map((item, index) => {
-                            return <span style={styles.rowNumItem}>{index + 1}</span>
-                        })
-                    }
-                </div>
-                <div style={styles.rowContainer}>
-                    {
-                        seats.map((item, itemIndex) => {
-                            return <div style={styles.seatsRow} key={itemIndex}>
-                                {item.map((seat, index) => {
-                                    return <div key={index} onClick={() => {
-                                        this.selectSeat(seat)
-                                    }} className={this.judgeSeatStatus(seat)}>
-                                        {index + 1}
-                                    </div>
-                                })}
+            <div className="seats">
+                <div className="seats-container">
+                    <div style={styles.rowNumContainer}>
+                        {
+                            seats.map((item, index) => {
+                                return <span style={styles.rowNumItem}>{index + 1}</span>
+                            })
+                        }
+                    </div>
+                    <div style={styles.rowContainer}>
+                        {
+                            seats.map((item, itemIndex) => {
+                                return <div className="seats-row" key={itemIndex}>
+                                    {item.map((seat, index) => {
+                                        return <div key={index} onClick={() => {
+                                            this.selectSeat(seat)
+                                        }} className={this.judgeSeatStatus(seat)}>
+                                        </div>
+                                    })}
+                                </div>
+                            })
+                        }
+                        <div className="tips">
+                            <div className="tip-item">
+                                <div className="seat-item seat-item-unsale"></div>
+                                <span>可选座位</span>
                             </div>
-                        })
-                    }
+                            <div className="tip-item">
+                                <div className="seat-item seat-item-saled"></div>
+                                <span>已出售座位</span>
+                            </div>
+                            <div className="tip-item">
+                                <div className="seat-item seat-item-selected"></div>
+                                <span>已选座位</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div className="selected-seats-info">
                     <p>影片：头号玩家</p>
-                    <p>时间：2011-11-11 21:00</p>
-                    <p className="seats">座位：
-                        {
-                            selectedSeats.map(seat => {
-                                return <span className="seat">{seat.seat_row}排{seat.seat_col}座</span>
-                            })
-                        }
+                    <p>影院：一号影院</p>
+                    <p>场次：2011-11-11 21:00</p>
+                    <p className="selected-seats">
+                        <span>座位：</span>
+                        <div className="seats-list">
+                            {
+                                selectedSeats.length ?
+                                    selectedSeats.map(seat => {
+                                        return <span className="seat">{seat.seat_row}排{seat.seat_col}座</span>
+                                    }) :
+                                    <span>还未选座位</span>
+
+                            }
+                        </div>
                     </p>
                     <p>票数：{selectedSeats.length}</p>
                     <p>总计：¥240</p>
@@ -183,10 +138,6 @@ export default class Seats extends Component {
 }
 
 const styles = {
-    seatsContainer: {
-        display: 'flex',
-        justifyContent: 'flex-start',
-    },
     rowNumContainer: {
         width: '20px',
         display: 'flex',
@@ -197,16 +148,12 @@ const styles = {
         fontSize: '20px',
         color: '#ffffff',
         marginBottom: '10px',
-        height: '30px',
-        lineHeight: '30px'
+        textAlign: 'center'
     },
     rowContainer: {
         display: 'flex',
         flexDirection: 'column',
-    },
-    seatsRow: {
-        display: 'flex',
-        flexDirection: 'row',
-        marginBottom: '10px'
+        flex: 1,
+        alignItems: 'center'
     },
 }

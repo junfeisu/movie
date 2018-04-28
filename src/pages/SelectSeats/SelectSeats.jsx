@@ -14,7 +14,7 @@ export default class SelectSeats extends Component {
     return (
       <div className="select-seats-page">
         <SimpleStep />
-        <Seats />
+        <Seats arrangeId={this.props.params.arrnageId}/>
       </div>
     );
   }
