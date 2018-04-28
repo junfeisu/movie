@@ -26,17 +26,19 @@
     background: #ffffff;
 }
 
-.seat-item-saled {
+.seat-item-selected {
     background: red;
     color: #ffffff;
 }
 
-.seat-item-selected {
+.seat-item-saled {
     background: gray;
     color: #ffffff;
 }
 
 .selected-seats-info {
+    display: flex;
+    flex-direction: column;
     width: 354px;
     font-size: 16px;
     background: #fff5f5;
@@ -72,7 +74,8 @@
     text-align: center;
     line-height: 30px;
     margin-left: 10px;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #f3390e;
     &:nth-child(4n + 1) {
         margin-left: 0;
     }
@@ -96,4 +99,11 @@
     &:last-child {
         margin-right: 0
     }
+}
+
+.btn-container {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
 }

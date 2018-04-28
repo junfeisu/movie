@@ -13,19 +13,27 @@ export default class Seats extends Component {
         super(props);
         this.state = {
             seats: seats,
-            selectedSeats: []
+            selectedSeats: [],
+            arrange: null
         };
     }
 
     getArrange = async () => {
-        const arranges = await fetch({
+        const arrange = await fetch({
             url: '/arrange/search',
             method: 'POST',
             data: {
                 arrangeId: this.props.arrangeId 
             }
         })
-        console.log(arranges)
+        if (arrange.data.length) {
+            console.log(arrange.data[0])
+            this.setState({
+                arrange: arrange.data[0]
+            })
+        } else {
+            Toastr.info("暂无本场电影安排")
+        }
     }
 
     buyTickets = async () => {
@@ -44,6 +52,9 @@ export default class Seats extends Component {
         const { selectedSeats } = this.state
         if (seat.saled) {
             Toastr.info("该座位已经出售，请选择其他座位")
+            return
+        } else if (selectedSeats.length >= 6 && !seat.selected) {
+            Toastr.info("您最多可购买六张电影票")
             return
         }
 
@@ -71,7 +82,8 @@ export default class Seats extends Component {
     }
 
     render() {
-        const { seats, selectedSeats } = this.state
+        const { seats, selectedSeats, arrange } = this.state
+        console.log(arrange)
         return (
             <div className="seats">
                 <div className="seats-container">
@@ -112,9 +124,9 @@ export default class Seats extends Component {
                     </div>
                 </div>
                 <div className="selected-seats-info">
-                    <p>影片：头号玩家</p>
+                    <p>影片：{arrange ? arrange.movie.zh_name : '暂无名称'}</p>
                     <p>影院：一号影院</p>
-                    <p>场次：2011-11-11 21:00</p>
+                    <p>场次：{arrange ? arrange.time : '暂无场次'}</p>
                     <p className="selected-seats">
                         <span>座位：</span>
                         <div className="seats-list">
@@ -129,8 +141,11 @@ export default class Seats extends Component {
                         </div>
                     </p>
                     <p>票数：{selectedSeats.length}</p>
-                    <p>总计：¥240</p>
-                    <Button type="primary" onClick={this.buyTickets}>确认购买</Button>
+                    <p>单价：¥{arrange ? arrange.price : 0}</p>
+                    <p>总计：¥{ arrange ? selectedSeats.length * arrange.price : 0}</p>
+                    <div className="btn-container">
+                        <Button size="large" type="primary" onClick={this.buyTickets}>确认购买</Button>
+                    </div>
                 </div>
             </div>
         )
