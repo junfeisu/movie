@@ -7,14 +7,22 @@ export default class SelectSeats extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      currentStep: 1
+    };
+  }
+
+  changeCurrentStep = (step) => {
+    this.setState({
+      currentStep: step
+    })
   }
 
   render() {
     return (
       <div className="select-seats-page">
-        <SimpleStep />
-        <Seats arrangeId={this.props.params.arrangeId}/>
+        <SimpleStep currentStep={this.state.currentStep} />
+        <Seats arrangeId={this.props.params.arrangeId} changeCurrentStep={this.changeCurrentStep} />
       </div>
     );
   }

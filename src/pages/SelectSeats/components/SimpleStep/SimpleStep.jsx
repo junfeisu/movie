@@ -15,8 +15,16 @@ export default class SimpleStep extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentStep: 1,
+      currentStep: this.props.currentStep ? this.props.currentStep : 1,
     };
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.currentStep !== this.props.currentStep) {
+      this.setState({
+        currentStep: nextProps.currentStep
+      })
+    }
   }
 
   render() {

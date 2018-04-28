@@ -63,6 +63,7 @@ export default class Seats extends Component {
 
             if (addOrderResult.status) {
                 Toastr.success("购票成功")
+                this.props.changeCurrentStep(2)
             } else {
                 Toastr.info("购票失败")
             }
