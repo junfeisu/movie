@@ -6,16 +6,28 @@ import { Button } from '@icedesign/base';
 import fetch from '../../../../fetch';
 
 import './Seats.scss';
-import seats from './seats.json';
 
 export default class Seats extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            seats: seats,
             selectedSeats: [],
             arrange: null
         };
+    }
+
+    changeSeatsStatus = () => {
+        let seats = copy(this.state.arrange.room)
+        seats.forEach(seat => {
+            seat.forEach(item => {
+                if (item.selected) {
+                    item.saled = true
+                    item.selected = false
+                }
+            })
+        })
+
+        return seats
     }
 
     getArrange = async () => {
@@ -23,11 +35,10 @@ export default class Seats extends Component {
             url: '/arrange/search',
             method: 'POST',
             data: {
-                arrangeId: this.props.arrangeId 
+                _id: this.props.arrangeId
             }
         })
         if (arrange.data.length) {
-            console.log(arrange.data[0])
             this.setState({
                 arrange: arrange.data[0]
             })
@@ -37,7 +48,25 @@ export default class Seats extends Component {
     }
 
     buyTickets = async () => {
-        console.log('购票')
+        let userInfo = JSON.parse(window.sessionStorage.getItem('user'))
+        if (userInfo) {
+            const addOrderResult = await fetch({
+                url: '/order/add',
+                method: 'POST',
+                data: {
+                    user: userInfo.user_id,
+                    arrange: this.props.arrangeId,
+                    num: this.state.selectedSeats.length,
+                    room: this.changeSeatsStatus()
+                }
+            })
+
+            if (addOrderResult.status) {
+                Toastr.success("购票成功")
+            } else {
+                Toastr.info("购票失败")
+            }
+        }
     }
 
     judgeSeatStatus = (seat) => {
@@ -82,21 +111,20 @@ export default class Seats extends Component {
     }
 
     render() {
-        const { seats, selectedSeats, arrange } = this.state
-        console.log(arrange)
+        const { selectedSeats, arrange } = this.state
         return (
             <div className="seats">
                 <div className="seats-container">
                     <div style={styles.rowNumContainer}>
                         {
-                            seats.map((item, index) => {
+                            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => {
                                 return <span style={styles.rowNumItem}>{index + 1}</span>
                             })
                         }
                     </div>
                     <div style={styles.rowContainer}>
                         {
-                            seats.map((item, itemIndex) => {
+                            arrange ? arrange.room.map((item, itemIndex) => {
                                 return <div className="seats-row" key={itemIndex}>
                                     {item.map((seat, index) => {
                                         return <div key={index} onClick={() => {
@@ -105,7 +133,7 @@ export default class Seats extends Component {
                                         </div>
                                     })}
                                 </div>
-                            })
+                            }) : <p>暂无座位安排</p>
                         }
                         <div className="tips">
                             <div className="tip-item">
@@ -129,16 +157,16 @@ export default class Seats extends Component {
                     <p>场次：{arrange ? arrange.time : '暂无场次'}</p>
                     <p className="selected-seats">
                         <span>座位：</span>
-                        <div className="seats-list">
+                        <span className="seats-list">
                             {
                                 selectedSeats.length ?
                                     selectedSeats.map(seat => {
                                         return <span className="seat">{seat.seat_row}排{seat.seat_col}座</span>
                                     }) :
-                                    <span>还未选座位</span>
+                                    <span>未选座位</span>
 
                             }
-                        </div>
+                        </span>
                     </p>
                     <p>票数：{selectedSeats.length}</p>
                     <p>单价：¥{arrange ? arrange.price : 0}</p>

@@ -14,10 +14,6 @@ export default class Header extends PureComponent {
     super(props)
   }
 
-  jumpLogin = () => {
-
-  }
-
   render() {
     const { width, theme, isMobile, className, style, user, ...others } = this.props;
 
@@ -114,7 +110,7 @@ export default class Header extends PureComponent {
                 </ul>
               </Balloon> :
               <Link to="/login">
-                <div onClick={this.jumpLogin} style={{ fontSize: 12, color: '#ffffff' }}>登录</div>
+                <div style={{ fontSize: 12, color: '#ffffff' }}>登录</div>
               </Link>
           }
         </div>
