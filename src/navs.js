@@ -3,6 +3,7 @@ const autoGenHeaderNavs = [];
 const autoGenAsideNavs = [
   { text: 'Nav16', to: '/movieDetail', icon: 'nav-list' },
   { text: 'Nav13', to: '/seats', icon: 'nav-list' },
+  { text: 'Nav15', to: '/user/1', icon: 'nav-list' },
 ];
 
 // <!-- auto generated navs end -->
