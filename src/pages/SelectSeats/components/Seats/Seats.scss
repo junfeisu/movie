@@ -11,21 +11,18 @@
     justify-content: center;
 }
 
-@media (max-width: 760px) {
-    .seats-container {
-        width: 100%;
-    }
-    .seat-item {
-        width: 25px;
-        height: 25px;
-        line-height: 25px;
-    }
+.row-num-container {
+    width: 20px;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 .seat-item {
     font-size: 14px;
     color: #000000;
-    
+    width: 30px;
+    height: 30px;
     margin-right: 10px;
     text-align: center;
     line-height: 30px;
@@ -119,4 +116,18 @@
     flex: 1;
     align-items: center;
     justify-content: center;
+}
+
+@media (max-width: 760px) {
+    .seats-container {
+        width: 100%;
+    }
+    .seat-item {
+        width: 25px;
+        height: 25px;
+        line-height: 25px;
+    }
+    .row-num-container {
+        display: none;
+    }
 }

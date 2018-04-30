@@ -116,13 +116,13 @@ export default class Seats extends Component {
         return (
             <div className="seats">
                 <div className="seats-container">
-                    {/* <div style={styles.rowNumContainer}>
+                    <div className="row-num-container">
                         {
                             [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => {
                                 return <span style={styles.rowNumItem}>{index + 1}</span>
                             })
                         }
-                    </div> */}
+                    </div>
                     <div style={styles.rowContainer}>
                         {
                             arrange ? arrange.room.map((item, itemIndex) => {
@@ -182,12 +182,6 @@ export default class Seats extends Component {
 }
 
 const styles = {
-    rowNumContainer: {
-        width: '20px',
-        display: 'flex',
-        flexDirection: 'column',
-        marginRight: '20px'
-    },
     rowNumItem: {
         fontSize: '20px',
         color: '#ffffff',
