@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import SimpleTable from './components/SimpleTable';
 
 export default class UserCenter extends Component {
   static displayName = 'UserCenter';
@@ -9,6 +10,10 @@ export default class UserCenter extends Component {
   }
 
   render() {
-    return <div className="user-center-page" />;
+    return (
+      <div className="user-center-page">
+        <SimpleTable />
+      </div>
+    );
   }
 }
