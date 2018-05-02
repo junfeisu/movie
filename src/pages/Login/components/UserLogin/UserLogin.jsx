@@ -1,6 +1,6 @@
 /* eslint react/no-string-refs:0 */
 import React, { Component } from 'react';
-import { hashHistory } from 'react-router';
+import { hashHistory, Link } from 'react-router';
 import { Input, Button, Checkbox, Grid } from '@icedesign/base';
 import {
   FormBinderWrapper as IceFormBinderWrapper,
@@ -134,14 +134,6 @@ export default class UserLogin extends Component {
                 </Row>
 
                 <Row style={styles.formItem}>
-                  <Col>
-                    <IceFormBinder name="checkbox">
-                      <Checkbox style={styles.checkbox}>记住账号</Checkbox>
-                    </IceFormBinder>
-                  </Col>
-                </Row>
-
-                <Row style={styles.formItem}>
                   <Button
                     type="primary"
                     onClick={this.login}
@@ -152,13 +144,13 @@ export default class UserLogin extends Component {
                 </Row>
 
                 <Row className="tips" style={styles.tips}>
-                  <a href="/" style={styles.link}>
+                  <Link to="/user/create" style={styles.link}>
                     立即注册
-                  </a>
+                  </Link>
                   <span style={styles.line}>|</span>
-                  <a href="/" style={styles.link}>
+                  <Link to="/user/pwd" style={styles.link}>
                     忘记密码
-                  </a>
+                  </Link>
                 </Row>
               </div>
             </IceFormBinderWrapper>
