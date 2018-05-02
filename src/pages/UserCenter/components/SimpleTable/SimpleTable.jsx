@@ -2,26 +2,13 @@ import React, { Component } from 'react';
 import { Table, Pagination } from '@icedesign/base';
 import IceContainer from '@icedesign/container';
 import IceImg from '@icedesign/img';
-import DataBinder from '@icedesign/data-binder';
 import IceLabel from '@icedesign/label';
+import fetch from '../../../../fetch';
+import Toastr from 'toastr';
+import { copy } from 'mi-elegant';
 
 import { enquireScreen } from 'enquire-js';
 
-@DataBinder({
-  tableData: {
-    // 详细请求配置请参见 https://github.com/axios/axios
-    url: '/mock/simple-table-list.json',
-    params: {
-      page: 1,
-    },
-    defaultBindingData: {
-      list: [],
-      total: 100,
-      pageSize: 10,
-      currentPage: 1,
-    },
-  },
-})
 export default class SimpleTable extends Component {
   static displayName = 'SimpleTable';
 
@@ -33,14 +20,45 @@ export default class SimpleTable extends Component {
     super(props);
     this.state = {
       isMobile: false,
+      orders: []
     };
   }
 
+  getOrders = async () => {
+    const { user } = this.props
+    const result = await fetch({
+      url: '/order/' + user.user_id || user._id
+    })
+
+    this.setState({
+      orders: result.data
+    })
+  }
+
+  deleteOrder = async (order, index) => {
+    const result = await fetch({
+      url: '/order/delete/' + order._id,
+      method: 'POST'
+    })
+
+    if (result.status) {
+      Toastr.success("删除成功")
+      let orders = copy(this.state.orders)
+      orders.splice(index, 1)
+      this.setState({
+        orders: orders
+      })
+    } else {
+      Toastr.error("删除失败")
+    }
+  }
+
+  componentWillMount () {
+    this.getOrders()
+  }
+ 
   componentDidMount() {
     this.enquireScreenRegister();
-    this.fetchData({
-      page: 1,
-    });
   }
 
   enquireScreenRegister = () => {
@@ -53,14 +71,6 @@ export default class SimpleTable extends Component {
     }, mediaCondition);
   };
 
-  fetchData = ({ page }) => {
-    this.props.updateBindingData('tableData', {
-      data: {
-        page,
-      },
-    });
-  };
-
   renderTitle = (value, index, record) => {
     return (
       <div
@@ -70,7 +80,7 @@ export default class SimpleTable extends Component {
         }}
       >
         <div>
-          <IceImg src={record.cover} width={48} height={48} />
+          <IceImg src={record.arrange.movie.image} width={48} height={48} />
         </div>
         <span
           style={{
@@ -78,11 +88,37 @@ export default class SimpleTable extends Component {
             lineHeight: '20px',
           }}
         >
-          {record.title}
+          {record.arrange.movie.zh_name}
         </span>
       </div>
     );
   };
+
+  renderType = (value, index, record) => {
+    return (
+      <div>{
+        record.arrange.movie.genres.slice(0, 3).map(item => {
+          return item + ' '
+        })
+      }</div>
+    )
+  }
+
+  renderTime = (value, index, record) => {
+    return (
+      <div>
+        {record.arrange.time}
+      </div>
+    )
+  }
+
+  renderCount = (value, index, record) => {
+    return (
+      <div>
+        {record.num} * {record.arrange.price}¥
+      </div>
+    )
+  }
 
   editItem = (record, e) => {
     e.preventDefault();
@@ -92,7 +128,9 @@ export default class SimpleTable extends Component {
   renderOperations = (value, index, record) => {
     return (
       <div style={{ lineHeight: '28px' }}>
-        <a href="#" style={styles.operation} target="_blank">
+        <a style={styles.operation} onClick={() =>{
+          this.deleteOrder(record, index)
+        }}>
           删除
         </a>
       </div>
@@ -114,33 +152,31 @@ export default class SimpleTable extends Component {
   };
 
   render() {
-    const tableData = this.props.bindingData.tableData;
+    const { orders } = this.state
 
     return (
       <div className="simple-table">
         <IceContainer>
           <Table
-            dataSource={tableData.list}
-            isLoading={tableData.__loading} // eslint-disable-line
+            dataSource={orders}
             className="basic-table"
             hasBorder={false}
           >
             <Table.Column
               title="电影名称"
               cell={this.renderTitle}
-              width={320}
+              width={180}
             />
-            <Table.Column title="问题分类" dataIndex="type" width={85} />
+            <Table.Column title="电影分类" cell={this.renderType} width={85} />
             <Table.Column
               title="订购时间"
-              dataIndex="publishTime"
+              cell={this.renderTime}
               width={150}
             />
             <Table.Column
-              title="状态"
-              dataIndex="publishStatus"
+              title="总价"
               width={85}
-              cell={this.renderStatus}
+              cell={this.renderCount}
             />
             <Table.Column
               title="操作"
@@ -149,15 +185,6 @@ export default class SimpleTable extends Component {
               cell={this.renderOperations}
             />
           </Table>
-          <div style={styles.paginationWrapper}>
-            <Pagination
-              current={tableData.currentPage}
-              pageSize={tableData.pageSize}
-              total={tableData.total}
-              onChange={this.changePage}
-              type={this.state.isMobile ? 'simple' : 'normal'}
-            />
-          </div>
         </IceContainer>
       </div>
     );
@@ -168,9 +195,6 @@ const styles = {
   operation: {
     marginRight: '12px',
     textDecoration: 'none',
-  },
-  paginationWrapper: {
-    textAlign: 'right',
-    paddingTop: '26px',
+    cursor: 'pointer'
   },
 };
