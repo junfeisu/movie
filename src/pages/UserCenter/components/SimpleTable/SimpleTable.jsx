@@ -92,21 +92,8 @@ export default class SimpleTable extends Component {
   renderOperations = (value, index, record) => {
     return (
       <div style={{ lineHeight: '28px' }}>
-        <a
-          href="#"
-          style={styles.operation}
-          target="_blank"
-          onClick={() => {
-            this.editItem(record);
-          }}
-        >
-          解决
-        </a>
         <a href="#" style={styles.operation} target="_blank">
-          详情
-        </a>
-        <a href="#" style={styles.operation} target="_blank">
-          分类
+          删除
         </a>
       </div>
     );
@@ -139,13 +126,13 @@ export default class SimpleTable extends Component {
             hasBorder={false}
           >
             <Table.Column
-              title="问题描述"
+              title="电影名称"
               cell={this.renderTitle}
               width={320}
             />
             <Table.Column title="问题分类" dataIndex="type" width={85} />
             <Table.Column
-              title="发布时间"
+              title="订购时间"
               dataIndex="publishTime"
               width={150}
             />

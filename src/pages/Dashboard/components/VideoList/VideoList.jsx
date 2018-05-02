@@ -7,75 +7,6 @@ import toastr from 'toastr';
 
 const { Row, Col } = Grid;
 
-const data = [
-  {
-    title: '正在热映',
-    value: [
-      {
-        fee: 1500,
-        desc:
-          '1. 外观与内部360度展示，包含车内展示，包含模特<br /> 2. 特写细节与质感，包括单不限于材质、五金件等<br /> 3. 有文案与讲解说明材质工艺的特殊性，实际使用效果展示',
-        videoUrl:
-          'http://cloud.video.taobao.com//play/u/1124755687/p/1/e/6/t/1/50040312475.mp4',
-        videoType: '外观与工艺',
-      },
-      {
-        fee: 1500,
-        desc:
-          '1. 模特实车内驾驶与使用，讲解产品结构与功能<br /> 2. 教学中涉及到的步骤文案说明，不同商品与型号标注清晰<br /> 3. 使用该商品完成的成果展示',
-        videoUrl:
-          'http://cloud.video.taobao.com//play/u/1124755687/p/1/e/6/t/1/50104638766.mp4',
-        videoType: '评测教学',
-      },
-      {
-        fee: 1500,
-        desc:
-          '1. 模特车内展示外观与内部结构展示<br /> 2. 主要功能与亮点讲解并且试用<br /> 3. 同类商品或者同款商品中不同色号之间对比',
-        videoUrl:
-          'http://cloud.video.taobao.com//play/u/1124755687/p/1/e/6/t/1/50104590975.mp4',
-        videoType: '功能讲解',
-      },
-      {
-        fee: 1500,
-        desc:
-          '1. 模特车内展示外观与内部结构展示<br /> 2. 主要功能与亮点讲解并且试用<br /> 3. 同类商品或者同款商品中不同色号之间对比',
-        videoUrl:
-          'http://cloud.video.taobao.com//play/u/1124755687/p/1/e/6/t/1/50104590975.mp4',
-        videoType: '测试功能',
-      },
-    ],
-  },
-  {
-    title: '即将上映',
-    value: [
-      {
-        fee: 500,
-        desc:
-          '1. 外观与内部360度展示<br /> 2. 特写细节与质感，包括单不限于材质、五金件等<br /> 3. 有文案与讲解说明材质工艺的特殊性',
-        videoUrl:
-          'http://cloud.video.taobao.com//play/u/1124755687/p/1/e/6/t/1/50047536808.mp4',
-        videoType: '外观与工艺',
-      },
-      {
-        fee: 1500,
-        desc:
-          '1. 明确教学场景制作菜肴烘培等，制作步骤需要文案或者讲解说明<br /> 2. 包含厨房场景与1名模特，原料与最终成品出炉展示，包含品尝环节',
-        videoUrl:
-          'http://cloud.video.taobao.com//play/u/1124755687/p/1/e/6/t/1/50094498364.mp4',
-        videoType: '评测教学',
-      },
-      {
-        fee: 1500,
-        desc:
-          '1. 厨房等使用场景下拍摄，展示外观与内部结构<br /> 2. 主要功能讲解与掩饰，亮点功能讲解需要突出与同类产品的差异<br /> 3. 功能试用，展示效果',
-        videoUrl:
-          'http://cloud.video.taobao.com//play/u/1124755687/p/1/e/6/t/1/50045264679.mp4',
-        videoType: '功能讲解',
-      },
-    ],
-  },
-];
-
 export default class VideoList extends Component {
   static displayName = 'VideoList';
 
@@ -97,15 +28,11 @@ export default class VideoList extends Component {
   fetchPlayingMovies = async () => {
     try {
       const playingMovies = await fetch({
-        host: 'https://api.douban.com',
-        url: '/v2/movie/in_theaters',
-        method: 'OPTIONS'
+        url: '/movie/playing'
       })
 
-      console.log('playing success')
-
       this.setState({
-        movies: playingMovies.subjects.slice(0, 4)
+        movies: playingMovies.data
       })
     } catch (err) {
       toastr.error(err)
@@ -115,13 +42,16 @@ export default class VideoList extends Component {
   fetchWillPlayMovies = async () => {
     try {
       const willPlayMovies = await fetch({
-        host: 'https://api.douban.com',
-        url: '/v2/movie/coming_soon',
-        method: 'OPTIONS'
+        url: '/movie/come_soon'
+      })
+
+      willPlayMovies.data.forEach(val => {
+        val.actors = val.casts
+        val.image = val.images.small
       })
 
       this.setState({
-        movies: willPlayMovies.subjects.slice(0, 4)
+        movies: willPlayMovies.data
       })
     } catch (err) {
       toastr.error(err)
@@ -160,36 +90,34 @@ export default class VideoList extends Component {
           })}
         </ul>
 
-        <Row style={styles.videoList} gutter="20" wrap="true">
+        <Row style={styles.videoList} gutter="20" wrap={true}>
           {movies.map((item, index) => {
             return (
               <Col xxs="24" s="12" l="6" key={index}>
                 <div style={styles.videoCarditem}>
                   <div style={{ position: 'relative', height: '420px', overflow: 'hidden' }}>
                     <img
-                      alt=""
-                      src={item.images.small}
+                      src={item.image}
                       style={styles.poster}
                     />
                   </div>
                   <div style={styles.videoInfo}>
-                    <h5 style={styles.videoTitle}>{item.title}</h5>
+                    <h5 style={styles.videoTitle}>{item.zh_name || item.title}</h5>
                     <div style={styles.videoDesc}>
                       <div>导演：{item.directors.map(item => {
                         return item.name + ' '
                       })}</div>
-                      <div>主演：{item.casts.map(item => {
+                      <div>主演：{item.actors.slice(0, 4).map(item => {
                         return item.name + ' '
                       })}</div>
                       <div>类型：{item.genres.map(item => {
                         return item + ' '
                       })}</div>
-                      <div>时间：{item.year}</div>
+                      <div>时间：{item.runtime || item.year}</div>
                     </div>
-                    <Link to="/movieDetail" style={styles.videoLink}>
+                    <Link to={`/movieDetail/${item._id || item.id}`} style={styles.videoLink}>
                       选座购票{' '}
                       <img
-                        alt=""
                         src="https://img.alicdn.com/tfs/TB13yHPmrSYBuNjSspiXXXNzpXa-40-40.png"
                         style={styles.arrowIcon}
                       />
@@ -267,15 +195,14 @@ const styles = {
     overflow: 'hidden',
   },
   videoLink: {
-    position: 'absolute',
-    top: '20px',
-    right: '0',
+    display: 'block',
     width: '124px',
     height: '32px',
     lineHeight: '32px',
     textAlign: 'center',
     color: '#fff',
     background: '#FF5D38',
+    margin: '0 auto'
   },
   arrowIcon: {
     width: '20px',
