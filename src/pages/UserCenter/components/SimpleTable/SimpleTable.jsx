@@ -26,13 +26,15 @@ export default class SimpleTable extends Component {
 
   getOrders = async () => {
     const { user } = this.props
-    const result = await fetch({
-      url: '/order/' + user.user_id || user._id
-    })
+    if (user) {
+      const result = await fetch({
+        url: '/order/' + user.user_id || user._id
+      })
 
-    this.setState({
-      orders: result.data
-    })
+      this.setState({
+        orders: result.data
+      })
+    }
   }
 
   deleteOrder = async (order, index) => {
