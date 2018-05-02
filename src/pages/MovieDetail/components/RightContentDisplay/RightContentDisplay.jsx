@@ -1,33 +1,66 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
+import fetch from '../../../../fetch';
 
-export default class RightContentDisplay extends Component {
+export default class RightContentDisplay extends PureComponent {
   static displayName = 'RightContentDisplay';
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      movie: null
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.movie !== this.props.movie) {
+      this.setState({
+        movie: nextProps.movie
+      })
+    }
   }
 
   render() {
+    const { movie } = this.state
+
     return (
       <div className="right-content-display" style={styles.container}>
         <div className="right-content-display-content" style={styles.content}>
           <div style={{marginRight: '80px'}}>
             <img
-              src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2516079193.webp"
+              src={movie ? movie.image : ''}
               alt="img"
               style={styles.image}
             />
           </div>
           <div style={styles.desc}>
-            <div style={styles.descItem}>导演：布拉德佩顿</div>
-            <div style={styles.descItem}>编剧：布拉德佩顿</div>
-            <div style={styles.descItem}>主演：布拉德佩顿</div>
-            <div style={styles.descItem}>类型：动作/科幻/冒险</div>
-            <div style={styles.descItem}>制片国家：中国大陆</div>
-            <div style={styles.descItem}>上映时间：2018-05-09</div>
-            <div style={styles.descItem}>语言：英语</div>
-            <div style={styles.descItem}>片长：107分钟</div>
+            <div style={styles.descItem}>影名： {movie ? movie.zh_name : ''}</div>
+            <div style={styles.descItem}>导演：{
+              movie ? movie.directors.map(item => {
+                return item.name + ' '
+              }) : '暂无'
+            }</div>
+            <div style={styles.descItem}>主演：{
+              movie ? movie.actors.slice(0, 4).map(item => {
+                return item.name + ' '
+              }) : '暂无'
+            }</div>
+            <div style={styles.descItem}>类型：{
+              movie ? movie.genres.map(item => {
+                return item + ' '
+              }) : '暂无'
+            }</div>
+            <div style={styles.descItem}>制片国家：{
+              movie ? movie.region.map(item => {
+                return item + ' '
+              }) : '暂无'
+            }</div>
+            <div style={styles.descItem}>上映时间：{movie ? movie.initialReleaseDate[0] : '暂无'}</div>
+            <div style={styles.descItem}>语言：{
+              movie ? movie.language.map(item => {
+                return item + ' '
+              }) : '暂无'
+            }</div>
+            <div style={styles.descItem}>片长：{movie ? movie.runtime : 0}</div>
           </div>
         </div>
       </div>

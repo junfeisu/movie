@@ -3,6 +3,7 @@ import RightContentDisplay from './components/RightContentDisplay';
 import { Table, Button } from '@icedesign/base';
 import { hashHistory } from 'react-router';
 import Toastr from 'toastr';
+import fetch from '../../fetch';
 
 export default class MovieDetail extends Component {
   static displayName = 'MovieDetail';
@@ -10,29 +11,45 @@ export default class MovieDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSource: {
-
-      }
+      noArrange: false,
+      movie: null,
+      arranges: []
     };
   }
 
-  getData = () => {
-    return [{
-      time: '2017-09-11',
-      room: '2号厅',
-      price: '36',
-      arrangeId: 1,
-    }, {
-      time: '2017-08-11',
-      room: '3号厅',
-      price: '36',
-      arrangeId: 2
-    }, {
-      time: '2017-07-11',
-      room: '4号厅',
-      price: '36',
-      arrangeId: 3
-    }]
+  getMovieInfo = async () => {
+    const result = await fetch({
+      url: '/movie/' + this.props.params.movieId,
+    })
+
+    this.setState({
+      movie: result.data
+    })
+  }
+
+  getArranges = async () => {
+    const result = await fetch({
+      url: '/arrange/search',
+      method: 'POST',
+      data: {
+        movie: this.props.params.movieId
+      }
+    })
+
+    if (result.data.length) {
+      this.setState({
+        arranges: result.data
+      })
+    } else {
+      this.setState({
+        noArrange: true
+      })
+    }
+  }
+
+  componentWillMount () {
+    this.getMovieInfo()
+    this.getArranges()
   }
 
   order = (arrangeId) => {
@@ -49,22 +66,32 @@ export default class MovieDetail extends Component {
     return (
       <div>
         <Button type="primary" onClick={() => {
-          this.order(record.arrangeId)
+          this.order(record._id)
         }}>选座购票</Button>
       </div>
     )
   }
 
+  renderIndex = (value, index, record) => {
+    return (
+      <div>{index + 1}号厅</div>
+    )
+  }
+
   render() {
+    const { arranges, noArrange, movie } = this.state
     return (
       <div className="movie-detail-page">
-        <RightContentDisplay />
-        <Table dataSource={this.getData()} hasBorder={false} isZebra={true}>
-          <Table.Column align="center" title="放映时间" dataIndex="time" />
-          <Table.Column align="center" title="放映厅" dataIndex="room" />
-          <Table.Column align="center" title="价格(元)" dataIndex="price" />
-          <Table.Column align="center" title="选座购票" cell={this.renderCell} />
-        </Table>
+        <RightContentDisplay movie={movie} />
+        {
+          noArrange ? <div>暂无上映安排，敬请等待</div> 
+            : <Table dataSource={arranges} hasBorder={false} isZebra={true}>
+              <Table.Column align="center" title="放映时间" dataIndex="time" />
+              <Table.Column align="center" title="放映厅" cell={this.renderIndex} />
+              <Table.Column align="center" title="价格(元)" dataIndex="price" />
+              <Table.Column align="center" title="选座购票" cell={this.renderCell} />
+            </Table>
+        }
       </div>
     );
   }
