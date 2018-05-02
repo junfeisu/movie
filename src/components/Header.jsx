@@ -93,7 +93,7 @@ export default class Header extends PureComponent {
               >
                 <ul>
                   <li className="user-profile-menu-item">
-                    <Link to="/">
+                    <Link to="/user">
                       <FoundationSymbol type="person" size="small" />我的主页
                     </Link>
                   </li>
