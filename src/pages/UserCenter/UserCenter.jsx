@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import SimpleTable from './components/SimpleTable';
+import UserInfoCard from './components/UserInfoCard';
 import Toastr from 'toastr';
 import { hashHistory } from 'react-router';
 
@@ -29,7 +30,8 @@ export default class UserCenter extends Component {
     const { user } = this.state
     return (
       <div className="user-center-page">
-        <SimpleTable user={user}/>
+        <UserInfoCard user={user} />
+        <SimpleTable user={user} />
       </div>
     );
   }
