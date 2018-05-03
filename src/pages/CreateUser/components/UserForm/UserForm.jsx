@@ -8,6 +8,9 @@ import {
   FormError as IceFormError,
 } from '@icedesign/form-binder';
 import './UserForm.scss';
+import fetch from '../../../../fetch';
+import Toastr from 'toastr';
+import { hashHistory } from 'react-router'
 
 const { Row, Col } = Grid;
 const Toast = Feedback.toast;
@@ -24,7 +27,7 @@ export default class UserForm extends Component {
       value: {
         username: '',
         displayName: '',
-        email: '',
+        // email: '',
         userGroup: null,
         userState: null,
         passwd: '',
@@ -33,20 +36,46 @@ export default class UserForm extends Component {
     };
   }
 
+  addUser = async () => {
+    try {
+      const { username, displayName, passwd } = this.state.value
+      const result = await fetch({
+        url: '/user/add',
+        method: 'POST',
+        data: {
+          username: username,
+          password: passwd,
+          phone: displayName
+        }
+      })
+
+      if (result.status) {
+        Toastr.info("注册成功，前去登录")
+        hashHistory.push('/login')
+      } else {
+        Toastr.error("注册失败")
+      }
+    } catch (err) {
+      if (err && err.data) {
+        Toastr.error(err.data.message)
+      }
+    }
+    
+  }
+
   checkPasswd = (rule, values, callback) => {
     if (!values) {
       callback('请输入新密码');
-    } else if (values.length < 8) {
-      callback('密码必须大于8位');
-    } else if (values.length > 16) {
-      callback('密码必须小于16位');
+    } else if (values.length < 6) {
+      callback('密码必须大于6位');
+    } else if (values.length > 15) {
+      callback('密码必须小于15位');
     } else {
       callback();
     }
   };
 
   checkPasswd2 = (rule, values, callback, stateValues) => {
-    console.log('stateValues:', stateValues);
     if (values && values !== stateValues.passwd) {
       callback('两次输入密码不一致');
     } else {
@@ -67,8 +96,7 @@ export default class UserForm extends Component {
         return;
       }
 
-      console.log('values:', values);
-      Toast.success('添加成功');
+      this.addUser()
     });
   };
 
@@ -98,7 +126,7 @@ export default class UserForm extends Component {
 
               <Row style={styles.formItem}>
                 <Col xxs="6" s="4" l="3" style={styles.formLabel}>
-                  昵称：
+                  手机：
                 </Col>
                 <Col xxs="16" s="12" l="10">
                   <IceFormBinder name="displayName">
@@ -108,7 +136,7 @@ export default class UserForm extends Component {
                 </Col>
               </Row>
 
-              <Row style={styles.formItem}>
+              {/* <Row style={styles.formItem}>
                 <Col xxs="6" s="4" l="3" style={styles.formLabel}>
                   邮箱：
                 </Col>
@@ -126,9 +154,9 @@ export default class UserForm extends Component {
                   </IceFormBinder>
                   <IceFormError name="email" />
                 </Col>
-              </Row>
+              </Row> */}
 
-              <Row style={styles.formItem}>
+              {/* <Row style={styles.formItem}>
                 <Col xxs="6" s="4" l="3" style={styles.formLabel}>
                   用户组：
                 </Col>
@@ -144,9 +172,9 @@ export default class UserForm extends Component {
                     />
                   </IceFormBinder>
                 </Col>
-              </Row>
+              </Row> */}
 
-              <Row style={styles.formItem}>
+              {/* <Row style={styles.formItem}>
                 <Col xxs="6" s="4" l="3" style={styles.formLabel}>
                   状态：
                 </Col>
@@ -163,7 +191,7 @@ export default class UserForm extends Component {
                     />
                   </IceFormBinder>
                 </Col>
-              </Row>
+              </Row> */}
 
               <Row style={styles.formItem}>
                 <Col xxs="6" s="4" l="3" style={styles.formLabel}>
