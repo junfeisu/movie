@@ -39,21 +39,25 @@ export default class UserLogin extends Component {
 
     const { username, password } = this.state
     try {
-      const loginResult = await fetch({
-        url: '/user/login',
-        method: 'POST',
-        data: {
-          username: username,
-          password: password
+      if (username && password) {
+        const loginResult = await fetch({
+          url: '/user/login',
+          method: 'POST',
+          data: {
+            username: username,
+            password: password
+          }
+        })
+        console.log(loginResult.data)
+        const { data, message, status } = loginResult
+        if (status) {
+          window.sessionStorage.setItem('user', JSON.stringify(data))
+          hashHistory.push('/');
+        } else {
+          toastr.error(message)
         }
-      })
-      console.log(loginResult.data)
-      const { data, message, status } = loginResult
-      if (status) {
-        window.sessionStorage.setItem('user', JSON.stringify(data))
-        hashHistory.push('/');
       } else {
-        toastr.error(message)
+        toastr.info("用户名，密码都不能为空")
       }
     } catch (err) {
       if (err && err.data) {
@@ -103,7 +107,7 @@ export default class UserLogin extends Component {
                       style={styles.inputIcon}
                     />
                     <IceFormBinder name="account" required message="必填">
-                      <Input maxLength={20} placeholder="会员名/邮箱/手机号" onChange={(val, evt) => {
+                      <Input maxLength={20} placeholder="用户名" onChange={(val, evt) => {
                         this.setState({
                           username: val
                         })
