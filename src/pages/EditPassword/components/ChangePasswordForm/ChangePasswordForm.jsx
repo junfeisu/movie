@@ -8,9 +8,11 @@ import {
   FormError as IceFormError,
 } from '@icedesign/form-binder';
 import './ChangePasswordForm.scss';
+import Toastr from 'toastr';
+import fetch from '../../../../fetch';
+import { hashHistory } from 'react-router';
 
 const { Row, Col } = Grid;
-const Toast = Feedback.toast;
 
 export default class ChangePasswordForm extends Component {
   static displayName = 'ChangePasswordForm';
@@ -23,19 +25,57 @@ export default class ChangePasswordForm extends Component {
     super(props);
     this.state = {
       value: {
+        oldPassword: '',
         passwd: '',
         rePasswd: '',
       },
+      user: null
     };
+  }
+
+  updatePassword = async () => {
+    try {
+      const { value, user } = this.state
+      const { oldPassword, passwd } = value
+      const result = await fetch({
+        url: '/user/updatePassword',
+        method: 'POST',
+        data: {
+          user_id: user._id || user.user_id,
+          oldPassword: oldPassword,
+          newPassword: passwd
+        }
+      })
+
+      if (result.status) {
+        Toastr.success("修改密码成功，请重新登录")
+        hashHistory.push('/login')
+      }
+    } catch (err) {
+      if (err & err.data) {
+        Toastr.error(err.data.message)
+      }
+    }
+  }
+
+  componentWillMount () {
+    let user = JSON.parse(window.sessionStorage.getItem('user'))
+    if (!user) {
+      hashHistory.push('/login')
+    } else {
+      this.setState({
+        user: user
+      })
+    }
   }
 
   checkPasswd = (rule, values, callback) => {
     if (!values) {
       callback('请输入新密码');
-    } else if (values.length < 8) {
-      callback('密码必须大于8位');
-    } else if (values.length > 16) {
-      callback('密码必须小于16位');
+    } else if (values.length < 6) {
+      callback('密码必须大于6位');
+    } else if (values.length > 15) {
+      callback('密码必须小于15位');
     } else {
       callback();
     }
@@ -62,8 +102,7 @@ export default class ChangePasswordForm extends Component {
         return;
       }
 
-      console.log('values:', values);
-      Toast.success('修改成功');
+      this.updatePassword()
     });
   };
 
@@ -78,6 +117,25 @@ export default class ChangePasswordForm extends Component {
           >
             <div style={styles.formContent}>
               <h2 style={styles.formTitle}>修改密码</h2>
+
+              <Row style={styles.formItem}>
+                <Col xxs="6" s="4" l="3" style={styles.formLabel}>
+                  原密码：
+                </Col>
+                <Col xxs="16" s="10" l="6">
+                  <IceFormBinder
+                    name="oldPassword"
+                    required
+                  >
+                    <Input
+                      htmlType="password"
+                      size="large"
+                      placeholder="请输入原密码"
+                    />
+                  </IceFormBinder>
+                  <IceFormError name="oldPassword" />
+                </Col>
+              </Row>
 
               <Row style={styles.formItem}>
                 <Col xxs="6" s="4" l="3" style={styles.formLabel}>

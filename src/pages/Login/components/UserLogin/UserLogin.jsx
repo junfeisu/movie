@@ -147,10 +147,6 @@ export default class UserLogin extends Component {
                   <Link to="/user/create" style={styles.link}>
                     立即注册
                   </Link>
-                  <span style={styles.line}>|</span>
-                  <Link to="/user/pwd" style={styles.link}>
-                    忘记密码
-                  </Link>
                 </Row>
               </div>
             </IceFormBinderWrapper>
@@ -209,6 +205,8 @@ const styles = {
     marginLeft: '5px',
   },
   tips: {
+    display: 'flex',
+    justifyContent: 'center',
     textAlign: 'center',
   },
   link: {
