@@ -54,16 +54,17 @@ export default class Seats extends Component {
                 url: '/order/add',
                 method: 'POST',
                 data: {
-                    user: userInfo.user_id,
+                    user: userInfo._id,
                     arrange: this.props.arrangeId,
                     num: this.state.selectedSeats.length,
-                    room: this.changeSeatsStatus()
+                    seats: this.state.selectedSeats
                 }
             })
 
             if (addOrderResult.status) {
                 Toastr.success("购票成功")
-                this.props.changeCurrentStep(2)
+                addOrderResult.data.movie = this.state.arrange.movie
+                this.props.changeCurrentStep(2, [addOrderResult.data])
             } else {
                 Toastr.info("购票失败")
             }
@@ -83,7 +84,8 @@ export default class Seats extends Component {
         if (seat.saled) {
             Toastr.info("该座位已经出售，请选择其他座位")
             return
-        } else if (selectedSeats.length >= 6 && !seat.selected) {
+        } 
+        if (selectedSeats.length >= 6 && !seat.selected) {
             Toastr.info("您最多可购买六张电影票")
             return
         }
