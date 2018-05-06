@@ -2,40 +2,7 @@ import React, { Component } from 'react';
 import IceContainer from '@icedesign/container';
 import fetch from '../../../../fetch';
 import Toastr from 'toastr';
-
-const dataSource = [
-  {
-    nickName: '某某',
-    datetime: '2分钟前',
-    avatar: 'https://img.alicdn.com/tfs/TB1L6tBXQyWBuNjy0FpXXassXXa-80-80.png',
-    message: '刚刚完成了智能化搭建课程的学习',
-  },
-  {
-    nickName: '某某',
-    datetime: '3分钟前',
-    avatar: 'https://img.alicdn.com/tfs/TB1L6tBXQyWBuNjy0FpXXassXXa-80-80.png',
-    message: '刚刚完成了 JavaScript 模块化打包课程的学习',
-  },
-  {
-    nickName: '某某',
-    datetime: '5分钟前',
-    avatar: 'https://img.alicdn.com/tfs/TB1L6tBXQyWBuNjy0FpXXassXXa-80-80.png',
-    message: '刚刚完成了智能化搭建课程的学习',
-  },
-  {
-    nickName: '某某',
-    datetime: '1天前',
-    avatar: 'https://img.alicdn.com/tfs/TB1L6tBXQyWBuNjy0FpXXassXXa-80-80.png',
-    message: '刚刚完成了智能化搭建课程的学习',
-  },
-  {
-    nickName: '某某',
-    datetime: '2天前',
-    avatar: 'https://img.alicdn.com/tfs/TB1L6tBXQyWBuNjy0FpXXassXXa-80-80.png',
-    message:
-      '刚刚完成了Sketch图形设计课程的学习，课程内容包括组件绘制，画布编辑等',
-  },
-];
+import { copy, format } from 'mi-elegant';
 
 export default class FeedList extends Component {
   static displayName = 'FeedList';
@@ -58,9 +25,43 @@ export default class FeedList extends Component {
     })
 
     if (result.status) {
+      result.data.forEach(val => {
+        val.time = format.formatTime(new Date(val.time).getTime())
+      })
       this.setState({
         comments: result.data
       })
+    }
+  }
+
+  deleteComment = async (comment, index) => {
+    try {
+      let user = JSON.parse(window.sessionStorage.getItem("user"))
+      const { comments } = this.state
+      if (!user || (user.role !== 'admin' && user._id !== comment.comment_user._id)) {
+        Toastr.info("您无权删除此评论")
+        return
+      }
+
+      const result = await fetch({
+        url: '/comment/delete/' + comment._id,
+        method: 'POST'
+      })
+
+      if (result.status) {
+        Toastr.success("删除成功")
+        let copyedComments = copy(comments)
+        copyedComments.splice(index, 1)
+        this.setState({
+          comments: copyedComments
+        })
+      } else {
+         Toastr.info("删除失败")
+      }
+    } catch (err) {
+      if (err && err.data) {
+        Toastr.error(err.data.message || err.message)
+      }
     }
   }
 
@@ -69,16 +70,19 @@ export default class FeedList extends Component {
     this.getComments()
   }
 
-  componentDidMount() {}
-
   renderItem = (item, idx) => {
     return (
       <div style={styles.item} key={idx}>
         <div style={styles.itemRow}>
-          <span style={styles.title}>
-            <img src={item.avatar} style={styles.avatar} alt="avatar" />
-            {item.username} 发布了一个评论
-          </span>
+          <div style={{display: 'flex', alignItems: 'center'}}>
+            <span style={styles.title}>
+                <img src="https://img.alicdn.com/tfs/TB1L6tBXQyWBuNjy0FpXXassXXa-80-80.png" style={styles.avatar} alt="avatar" />
+                {item.username} 发布了一个评论
+            </span>
+            <span onClick={() => {
+              this.deleteComment(item, idx)
+            }} style={styles.delete}>删除</span>
+          </div>
           <span style={styles.status}>{item.time}</span>
         </div>
         <a style={styles.message}>
@@ -123,6 +127,12 @@ const styles = {
     fontSize: '14px',
     display: 'inline-flex',
     lineHeight: '22px',
+  },
+  delete: {
+    fontSize: '14px',
+    marginLeft: '20px',
+    cursor: 'pointer',
+    color: 'rgb(243, 7, 40)'
   },
   status: {
     display: 'flex',

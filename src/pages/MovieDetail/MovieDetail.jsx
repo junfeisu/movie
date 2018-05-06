@@ -81,11 +81,39 @@ export default class MovieDetail extends Component {
   }
 
   addComment = async () => {
+    try {
+      let user = JSON.parse(window.sessionStorage.getItem('user'))
+      const { content } = this.state
+      if (user) {
+        const result = await fetch({
+          url: '/comment/add',
+          method: 'POST',
+          data: {
+            movie: this.props.params.movieId,
+            comment_user: user._id,
+            content: content
+          }
+        })
 
+        if (result.status) {
+          Toastr.success("评论成功")
+          this.setState({
+            content: ''
+          })
+        }
+      } else {
+        Toastr.info("先登录在评论")
+        hashHistory.push("/login")
+      }
+    } catch (err) {
+      if (err && err.data) {
+        Toastr.error(err.data.message || err.message)
+      }
+    }
   }
 
   render() {
-    const { arranges, noArrange, movie } = this.state
+    const { arranges, noArrange, movie, content } = this.state
     return (
       <div className="movie-detail-page">
         <RightContentDisplay movie={movie} />
@@ -100,7 +128,7 @@ export default class MovieDetail extends Component {
         }
         <div style={{display: 'flex', flexDirection: 'column', marginBottom: '20px', alignItems: 'flex-end'}}>
           <div style={{width: '100%', fontSize: "20px", color: "#fff", borderBottom: '2px solid #fff', height: '40px', marginBottom: '10px'}}>评论</div>
-          <Input size="large" placeholder="请输入评论内容" style={{width: "100%", height: '60px'}} onChange={(val ,ev) => {
+          <Input value={content} multiple placeholder="请输入评论内容" style={{width: "100%"}} onChange={(val, ev) => {
             this.setState({
               content: val
             })
