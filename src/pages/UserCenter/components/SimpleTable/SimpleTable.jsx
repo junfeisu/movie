@@ -5,7 +5,7 @@ import IceImg from '@icedesign/img';
 import IceLabel from '@icedesign/label';
 import fetch from '../../../../fetch';
 import Toastr from 'toastr';
-import { copy } from 'mi-elegant';
+import { copy, format } from 'mi-elegant';
 
 import { enquireScreen } from 'enquire-js';
 
@@ -28,7 +28,11 @@ export default class SimpleTable extends Component {
     const { user } = this.props
     if (user) {
       const result = await fetch({
-        url: '/order/' + user.user_id || user._id
+        url: '/order/' + user._id
+      })
+
+      result.data.forEach(item => {
+        item.arrange.time = format.formatDate(item.arrange.time, 'yyyy-mm-dd hh:mm')
       })
 
       this.setState({

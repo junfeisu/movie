@@ -28,6 +28,7 @@ export default class UserCenter extends Component {
 
   render() {
     const { user } = this.state
+    console.log(user)
     return (
       <div className="user-center-page">
         <UserInfoCard user={user} />

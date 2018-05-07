@@ -39,6 +39,10 @@ export default class UserInfoCard extends Component {
                   <Icon type="mobile-phone" size="xs" style={styles.itemIcon} />
                   {user.phone}
                 </li>
+                <li style={{ ...styles.profileItem, width: '100%' }}>
+                  <Icon type="account" size="xs" style={styles.itemIcon} />
+                  角色：{user.role === 'normal' ? '普通用户' : '管理员'}
+                </li>
               </ul>
             </div>
         </div>
