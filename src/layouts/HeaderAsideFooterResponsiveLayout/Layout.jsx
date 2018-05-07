@@ -31,9 +31,24 @@ export default class HeaderAsideFooterResponsiveLayout extends Component {
       openDrawer: false,
       isScreen: undefined,
       openKeys,
+      user: null
     };
     this.openKeysCache = openKeys;
   }
+
+  judgeLoginStatus = () => {
+    let user = JSON.parse(window.sessionStorage.getItem('user'))
+    if (user) {
+      this.setState({
+        user: user
+      })
+    }
+  }
+
+  componentWillMount() {
+    this.judgeLoginStatus();
+  }
+
 
   componentDidMount() {
     this.enquireScreenRegister();
@@ -149,6 +164,7 @@ export default class HeaderAsideFooterResponsiveLayout extends Component {
       >
         <Header
           theme={theme}
+          user={this.state.user}
           isMobile={this.state.isScreen !== 'isDesktop' ? true : undefined}
         />
         <Layout.Section>

@@ -185,6 +185,9 @@ const styles = {
     margin: '0 0 10px',
     lineHeight: '32px',
     fontSize: '24px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
   },
   videoDesc: {
     padding: '0 0 20px',
