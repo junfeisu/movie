@@ -17,17 +17,14 @@ export default class Seats extends Component {
     }
 
     changeSeatsStatus = () => {
-        let seats = copy(this.state.arrange.room)
-        seats.forEach(seat => {
-            seat.forEach(item => {
-                if (item.selected) {
-                    item.saled = true
-                    item.selected = false
-                }
-            })
+        let arrange = copy(this.state.arrange)
+        const { selectedSeats } = this.state
+        selectedSeats.forEach(seat => {
+            arrange.room[seat.seat_row - 1][seat.seat_col - 1].saled = true
+            arrange.room[seat.seat_row - 1][seat.seat_col - 1].selected = false
         })
 
-        return seats
+        return arrange
     }
 
     getArrange = async () => {
@@ -63,6 +60,13 @@ export default class Seats extends Component {
 
             if (addOrderResult.status) {
                 Toastr.success("购票成功")
+                this.setState({
+                    arrange: this.changeSeatsStatus()
+                }, () => {
+                    this.setState({
+                        selectedSeats: []
+                    })
+                })
                 addOrderResult.data.movie = this.state.arrange.movie
                 this.props.changeCurrentStep(2, [addOrderResult.data])
             } else {
