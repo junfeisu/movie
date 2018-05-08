@@ -27,8 +27,7 @@ export default class UserForm extends Component {
       value: {
         username: '',
         displayName: '',
-        // email: '',
-        userGroup: null,
+        role: 'normal',
         userState: null,
         passwd: '',
         rePasswd: '',
@@ -38,14 +37,15 @@ export default class UserForm extends Component {
 
   addUser = async () => {
     try {
-      const { username, displayName, passwd } = this.state.value
+      const { username, displayName, passwd, role } = this.state.value
       const result = await fetch({
         url: '/user/add',
         method: 'POST',
         data: {
           username: username,
           password: passwd,
-          phone: displayName
+          phone: displayName,
+          role: role
         }
       })
 
@@ -101,6 +101,7 @@ export default class UserForm extends Component {
   };
 
   render() {
+    const { user } = this.props
     return (
       <div className="user-form">
         <IceContainer>
@@ -136,62 +137,26 @@ export default class UserForm extends Component {
                 </Col>
               </Row>
 
-              {/* <Row style={styles.formItem}>
-                <Col xxs="6" s="4" l="3" style={styles.formLabel}>
-                  邮箱：
+              {
+                user.role === 'admin' ? <Row style={styles.formItem}>
+                  <Col xxs="6" s="4" l="3" style={styles.formLabel}>
+                    用户组：
                 </Col>
-                <Col xxs="16" s="12" l="10">
-                  <IceFormBinder
-                    type="email"
-                    name="email"
-                    required
-                    message="请输入正确的邮箱"
-                  >
-                    <Input
-                      size="large"
-                      placeholder="ice-admin@alibaba-inc.com"
-                    />
-                  </IceFormBinder>
-                  <IceFormError name="email" />
-                </Col>
-              </Row> */}
-
-              {/* <Row style={styles.formItem}>
-                <Col xxs="6" s="4" l="3" style={styles.formLabel}>
-                  用户组：
-                </Col>
-                <Col xxs="16" s="12" l="10">
-                  <IceFormBinder name="userGroup">
-                    <Select
-                      size="large"
-                      placeholder="请选择..."
-                      dataSource={[
-                        { label: '管理员', value: 'administrator' },
-                        { label: '投稿者', value: 'contributor' },
-                      ]}
-                    />
-                  </IceFormBinder>
-                </Col>
-              </Row> */}
-
-              {/* <Row style={styles.formItem}>
-                <Col xxs="6" s="4" l="3" style={styles.formLabel}>
-                  状态：
-                </Col>
-                <Col xxs="16" s="12" l="10">
-                  <IceFormBinder name="userState">
-                    <Select
-                      size="large"
-                      placeholder="请选择..."
-                      dataSource={[
-                        { label: '有效', value: 'valid' },
-                        { label: '禁用', value: 'disabled' },
-                        { label: '过期', value: 'invalid' },
-                      ]}
-                    />
-                  </IceFormBinder>
-                </Col>
-              </Row> */}
+                  <Col xxs="16" s="12" l="10">
+                    <IceFormBinder name="role">
+                      <Select
+                        size="large"
+                        placeholder="请选择..."
+                        value={this.state.value.role}
+                        dataSource={[
+                          { label: '管理员', value: 'admin' },
+                          { label: '普通用户', value: 'normal' },
+                        ]}
+                      />
+                    </IceFormBinder>
+                  </Col>
+                </Row> : null
+              }
 
               <Row style={styles.formItem}>
                 <Col xxs="6" s="4" l="3" style={styles.formLabel}>
