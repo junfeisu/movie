@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Dialog, Button, Form, Input, Field } from '@icedesign/base';
+import { Dialog, Button, Form, Input, Field, Select } from '@icedesign/base';
+import fetch from '../../../../../fetch';
+import Toastr from 'toastr';
 
 const FormItem = Form.Item;
 
@@ -18,17 +20,29 @@ export default class EditDialog extends Component {
   }
 
   handleSubmit = () => {
-    this.field.validate((errors, values) => {
+    this.field.validate(async (errors, values) => {
       if (errors) {
         console.log('Errors in form!!!');
         return;
       }
 
       const { dataIndex } = this.state;
-      this.props.getFormValues(dataIndex, values);
-      this.setState({
-        visible: false,
-      });
+      
+      const result = await fetch({
+        url: '/user/update',
+        method: 'POST',
+        data: values
+      })
+
+      if (result.status) {
+        this.props.getFormValues(dataIndex, values);
+        this.setState({
+          visible: false,
+        });
+      } else {
+        Toastr.info("更改失败")
+      }
+      
     });
   };
 
@@ -85,55 +99,24 @@ export default class EditDialog extends Component {
               />
             </FormItem>
 
-            <FormItem label="邮箱：" {...formItemLayout}>
+            <FormItem label="手机：" {...formItemLayout}>
               <Input
-                {...init('email', {
+                {...init('phone', {
                   rules: [{ required: true, message: '必填选项' }],
                 })}
               />
             </FormItem>
 
             <FormItem label="用户组：" {...formItemLayout}>
-              <Input
-                {...init('group', {
+              <Select
+                {...init('role', {
                   rules: [{ required: true, message: '必填选项' }],
                 })}
-              />
-            </FormItem>
-
-            <FormItem label="文章数：" {...formItemLayout}>
-              <Input
-                disabled
-                {...init('articleNum', {
-                  rules: [{ required: true, message: '必填选项' }],
-                })}
-              />
-            </FormItem>
-
-            <FormItem label="评论数：" {...formItemLayout}>
-              <Input
-                disabled
-                {...init('commentNum', {
-                  rules: [{ required: true, message: '必填选项' }],
-                })}
-              />
-            </FormItem>
-
-            <FormItem label="注册时间：" {...formItemLayout}>
-              <Input
-                disabled
-                {...init('regTime', {
-                  rules: [{ required: true, message: '必填选项' }],
-                })}
-              />
-            </FormItem>
-
-            <FormItem label="最后登录时间：" {...formItemLayout}>
-              <Input
-                disabled
-                {...init('LastLoginTime', {
-                  rules: [{ required: true, message: '必填选项' }],
-                })}
+                placeholder="请选择..."
+                dataSource={[
+                  { label: '管理员', value: 'admin' },
+                  { label: '普通用户', value: 'normal' },
+                ]}
               />
             </FormItem>
           </Form>

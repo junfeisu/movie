@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import IceContainer from '@icedesign/container';
 import { Tab } from '@icedesign/base';
-import axios from 'axios';
 import CustomTable from './components/CustomTable';
 import EditDialog from './components/EditDialog';
 import DeleteBalloon from './components/DeleteBalloon';
+import fetch from '../../../../fetch';
+import Toastr from 'toastr';
 
 const TabPane = Tab.TabPane;
 
-const tabs = [{ tab: '全部', key: 'all' }, { tab: '审核中', key: 'review' }];
+const tabs = [{ tab: '全部', key: 'all' }];
 
 export default class TabTable extends Component {
   static displayName = 'TabTable';
@@ -22,11 +23,12 @@ export default class TabTable extends Component {
     this.state = {
       dataSource: {},
       tabKey: 'all',
+      users: []
     };
     this.columns = [
       {
         title: 'ID',
-        dataIndex: 'id',
+        dataIndex: '_id',
         key: 'id',
         width: 50,
       },
@@ -37,40 +39,16 @@ export default class TabTable extends Component {
         width: 100,
       },
       {
-        title: '邮箱',
-        dataIndex: 'email',
-        key: 'email',
+        title: '手机',
+        dataIndex: 'phone',
+        key: 'phone',
         width: 150,
       },
       {
         title: '用户组',
-        dataIndex: 'group',
-        key: 'group',
+        dataIndex: 'role',
+        key: 'role',
         width: 120,
-      },
-      {
-        title: '文章数',
-        dataIndex: 'articleNum',
-        key: 'articleNum',
-        width: 80,
-      },
-      {
-        title: '评论数',
-        dataIndex: 'commentNum',
-        key: 'commentNum',
-        width: 80,
-      },
-      {
-        title: '注册时间',
-        dataIndex: 'regTime',
-        key: 'regTime',
-        width: 150,
-      },
-      {
-        title: '最后登录时间',
-        dataIndex: 'LastLoginTime',
-        key: 'LastLoginTime',
-        width: 150,
       },
       {
         title: '操作',
@@ -85,7 +63,7 @@ export default class TabTable extends Component {
                 getFormValues={this.getFormValues}
               />
               <DeleteBalloon
-                handleRemove={() => this.handleRemove(value, index, record)}
+                handleRemove={() => this.deleteUser(value, index, record)}
               />
             </span>
           );
@@ -94,33 +72,44 @@ export default class TabTable extends Component {
     ];
   }
 
-  componentDidMount() {
-    axios
-      .get('/mock/user-list.json')
-      .then((response) => {
-        this.setState({
-          dataSource: response.data.data,
-        });
+  getUserList = async () => {
+    const result = await fetch({
+      url: '/user/list'
+    })
+
+    if (result.status) {
+      this.setState({
+        users: result.data
       })
-      .catch((error) => {
-        console.log(error);
-      });
+    }
+  }
+
+  componentDidMount() {
+    this.getUserList()
   }
 
   getFormValues = (dataIndex, values) => {
-    const { dataSource, tabKey } = this.state;
-    dataSource[tabKey][dataIndex] = values;
+    const { users } = this.state;
+    users[dataIndex] = values;
     this.setState({
-      dataSource,
+      users,
     });
   };
 
-  handleRemove = (value, index) => {
-    const { dataSource, tabKey } = this.state;
-    dataSource[tabKey].splice(index, 1);
-    this.setState({
-      dataSource,
-    });
+  deleteUser = async (value, index, record) => {
+    const { users } = this.state;
+    const deleteResult = await fetch({
+      url: '/user/delete/' + record._id,
+      method: 'POST'
+    })
+
+    if (deleteResult.status) {
+      users.splice(index, 1);
+
+      this.setState({
+        users,
+      });
+    }
   };
 
   handleTabChange = (key) => {
@@ -130,7 +119,7 @@ export default class TabTable extends Component {
   };
 
   render() {
-    const { dataSource } = this.state;
+    const { users } = this.state;
     return (
       <div className="tab-table">
         <IceContainer style={{ padding: '0 20px 20px' }}>
@@ -139,7 +128,7 @@ export default class TabTable extends Component {
               return (
                 <TabPane tab={item.tab} key={item.key}>
                   <CustomTable
-                    dataSource={dataSource[this.state.tabKey]}
+                    dataSource={users}
                     columns={this.columns}
                     hasBorder={false}
                   />
