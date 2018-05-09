@@ -16,8 +16,8 @@ export default class BasicSetting extends Component {
 
   render() {
     const breadcrumb = [
-      { text: '通用设置', link: '' },
-      { text: '基本设置', link: '#/setting/basic' },
+      { text: '电影管理', link: '' },
+      { text: '添加', link: '#/movie/create' },
     ];
     return (
       <div className="basic-setting-page">

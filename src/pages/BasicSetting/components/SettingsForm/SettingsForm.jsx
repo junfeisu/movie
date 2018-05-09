@@ -1,13 +1,16 @@
 /* eslint  react/no-string-refs: 0 */
 import React, { Component } from 'react';
 import IceContainer from '@icedesign/container';
-import { Input, Button, Radio, Switch, Upload, Grid } from '@icedesign/base';
+import { Input, Button, Radio, Select, Upload, Grid } from '@icedesign/base';
 import {
   FormBinderWrapper as IceFormBinderWrapper,
   FormBinder as IceFormBinder,
   FormError as IceFormError,
 } from '@icedesign/form-binder';
 import './SettingsForm.scss';
+import categories from '../../../../categories';
+import fetch from '../../../../fetch';
+import Toastr from 'toastr';
 
 const { Row, Col } = Grid;
 const { Group: RadioGroup } = Radio;
@@ -40,37 +43,39 @@ export default class SettingsForm extends Component {
     super(props);
     this.state = {
       value: {
-        name: '',
-        gender: 'male',
-        notice: false,
-        email: '',
-        avatar: '',
-        siteUrl: '',
-        githubUrl: '',
-        twitterUrl: '',
-        description: '',
+        zh_name: '',
+        language: '中文',
+        runtime: '',
+        image: '',
+        genres: [],
+        region: '',
+        directors: '',
+        actors: '',
       },
     };
   }
 
-  onDragOver = () => {
-    console.log('dragover callback');
-  };
-
-  onDrop = (fileList) => {
-    console.log('drop callback : ', fileList);
-  };
-
   formChange = (value) => {
-    console.log('value', value);
     this.setState({
       value,
     });
   };
 
   validateAllFormField = () => {
-    this.refs.form.validateAll((errors, values) => {
-      console.log('errors', errors, 'values', values);
+    this.refs.form.validateAll(async (errors, values) => {
+      if (errors && errors.length) {
+        Toastr.info(errors[0].message)
+      } else {
+        values.region = [values.region]
+        value.directors = value.directors.trim().split('\s')
+        value.actors = value.actors.trim().split('\s')
+
+        const { zh_name, language, genres, runtime, region, image, directors, actors } = values
+
+       const result = await fetch({
+         url: '/'
+       })
+      }
     });
   };
 
@@ -84,29 +89,28 @@ export default class SettingsForm extends Component {
             ref="form"
           >
             <div style={styles.formContent}>
-              <h2 style={styles.formTitle}>基本设置</h2>
+              <h2 style={styles.formTitle}>添加电影</h2>
 
               <Row style={styles.formItem}>
                 <Col xxs="6" s="4" l="3" style={styles.label}>
-                  姓名：
+                  电影名：
                 </Col>
                 <Col xxs="16" s="10" l="6">
-                  <IceFormBinder name="name" required max={10} message="必填">
-                    <Input size="large" placeholder="于江水" />
+                  <IceFormBinder name="zh_name" required max={10} message="电影名必填">
+                    <Input size="large" placeholder="电影名" />
                   </IceFormBinder>
-                  <IceFormError name="name" />
+                  <IceFormError name="zh_name" />
                 </Col>
               </Row>
 
               <Row style={styles.formItem}>
                 <Col xxs="6" s="4" l="3" style={styles.label}>
-                  头像：
+                  海报：
                 </Col>
                 <Col xxs="16" s="10" l="6">
-                  <IceFormBinder name="avatar" required message="必填">
+                  <IceFormBinder name="image" required message="必填">
                     <ImageUpload
                       listType="picture-card"
-                      action=""
                       accept="image/png, image/jpg, image/jpeg, image/gif, image/bmp"
                       locale={{
                         image: {
@@ -120,124 +124,126 @@ export default class SettingsForm extends Component {
                       onError={onError}
                     />
                   </IceFormBinder>
-                  <IceFormError name="avatar" />
+                  <IceFormError name="image" />
                 </Col>
               </Row>
 
               <Row style={styles.formItem}>
                 <Col xxs="6" s="4" l="3" style={styles.label}>
-                  性别：
+                  语言：
                 </Col>
                 <Col xxs="16" s="10" l="6">
-                  <IceFormBinder name="gender" required message="必填">
+                  <IceFormBinder name="language" required message="必填">
                     <RadioGroup>
-                      <Radio value="male">男</Radio>
-                      <Radio value="female">女</Radio>
+                      <Radio value="中文">中文</Radio>
+                      <Radio value="英文">英文</Radio>
                     </RadioGroup>
                   </IceFormBinder>
-                  <IceFormError name="gender" />
+                  <IceFormError name="language" />
                 </Col>
               </Row>
 
               <Row style={styles.formItem}>
                 <Col xxs="6" s="4" l="3" style={styles.label}>
-                  通知：
-                </Col>
-                <Col xxs="16" s="10" l="6">
-                  <IceFormBinder type="boolean" name="notice">
-                    <Switch />
-                  </IceFormBinder>
-                  <IceFormError name="notice" />
-                </Col>
-              </Row>
-
-              <Row style={styles.formItem}>
-                <Col xxs="6" s="4" l="3" style={styles.label}>
-                  邮件：
+                  电影时长：
                 </Col>
                 <Col xxs="16" s="10" l="6">
                   <IceFormBinder
-                    type="email"
-                    name="email"
+                    name="runtime"
                     required
-                    message="请输入正确的邮件"
+                    message="请输入电影时长"
                   >
                     <Input
                       size="large"
-                      placeholder="ice-admin@alibaba-inc.com"
                     />
                   </IceFormBinder>
-                  <IceFormError name="email" />
+                  <IceFormError name="runtime" />
+                </Col>
+              </Row>
+              <Row style={styles.formItem}>
+                <Col xxs="6" s="4" l="3" style={styles.label}>
+                  电影分类：
+                </Col>
+                <Col span="11" offset="2">
+                    <IceFormBinder
+                      name="genres"
+                      required
+                      type="array"
+                      message="分类必填支持多个"
+                    >
+                      <Select
+                        style={styles.cats}
+                        multiple
+                        placeholder="请选择分类"
+                        dataSource={categories}
+                      />
+                    </IceFormBinder>
+                    <IceFormError
+                      name="cats"
+                      render={(errors) => {
+                        console.log('errors', errors);
+                        return (
+                          <div>
+                            <span style={{ color: 'red' }}>
+                              {errors.map(item => item.message).join(',')}
+                            </span>
+                          </div>
+                        );
+                      }}
+                    />
                 </Col>
               </Row>
 
               <Row style={styles.formItem}>
                 <Col xxs="6" s="4" l="3" style={styles.label}>
-                  website ：
+                  制片国家 ：
                 </Col>
                 <Col xxs="16" s="10" l="6">
                   <IceFormBinder
-                    type="url"
-                    name="siteUrl"
+                    name="region"
                     required
-                    message="请输入正确的网站地址"
+                    message="请输入电影制片国家"
                   >
                     <Input
                       size="large"
-                      type="url"
-                      placeholder="https://alibaba.github.io/ice"
                     />
                   </IceFormBinder>
-                  <IceFormError name="siteUrl" />
+                  <IceFormError name="region" />
                 </Col>
               </Row>
 
               <Row style={styles.formItem}>
                 <Col xxs="6" s="4" l="3" style={styles.label}>
-                  Github：
+                  导演：
                 </Col>
                 <Col xxs="16" s="10" l="6">
                   <IceFormBinder
-                    type="url"
-                    name="githubUrl"
+                    name="directors"
                     required
-                    message="请输入正确的 Github 地址"
+                    message="请输入电影导演"
+                  >
+                    <Input size="large" placeholder="输入电影的导演，以空格分割" />
+                  </IceFormBinder>
+                  <IceFormError name="directors" />
+                </Col>
+              </Row>
+
+              <Row style={styles.formItem}>
+                <Col xxs="6" s="4" l="3" style={styles.label}>
+                  主演：
+                </Col>
+                <Col xxs="16" s="10" l="6">
+                  <IceFormBinder
+                    name="actors"
+                    required
+                    message="请输入电影的主演"
                   >
                     <Input
                       size="large"
-                      placeholder="https://github.com/alibaba/ice"
+                      placeholder="输入电影的主演，以空格分割"
                     />
                   </IceFormBinder>
-                  <IceFormError name="githubUrl" />
-                </Col>
-              </Row>
-
-              <Row style={styles.formItem}>
-                <Col xxs="6" s="4" l="3" style={styles.label}>
-                  Twitter：
-                </Col>
-                <Col xxs="16" s="10" l="6">
-                  <IceFormBinder
-                    type="url"
-                    name="twitterUrl"
-                    required
-                    message="请输入正确的 Twitter 地址"
-                  >
-                    <Input size="large" placeholder="https://twitter.com" />
-                  </IceFormBinder>
-                  <IceFormError name="twitterUrl" />
-                </Col>
-              </Row>
-
-              <Row style={styles.formItem}>
-                <Col xxs="6" s="4" l="3" style={styles.label}>
-                  自我描述：
-                </Col>
-                <Col xxs="16" s="10" l="6">
-                  <IceFormBinder name="description">
-                    <Input size="large" multiple placeholder="请输入描述..." />
-                  </IceFormBinder>
-                  <IceFormError name="description" />
+                  <IceFormError name="actors" />
                 </Col>
               </Row>
             </div>
