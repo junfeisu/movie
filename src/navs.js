@@ -19,21 +19,21 @@ const customAsideNavs = [
     icon: 'home',
   },
   {
-    text: '文章管理',
+    text: '上映管理',
     to: '/post',
     icon: 'copy',
     children: [
-      { text: '文章列表', to: '/post/list' },
-      { text: '添加文章', to: '/post/create' },
+      { text: '上映列表', to: '/post/list' },
+      { text: '添加上映', to: '/post/create' },
     ],
   },
   {
-    text: '分类管理',
-    to: '/cate',
+    text: '电影管理',
+    to: '/movie',
     icon: 'cascades',
     children: [
-      { text: '分类列表', to: '/cate/list' },
-      { text: '添加分类', to: '/cate/create' },
+      { text: '上映列表', to: '/movie/list' },
+      { text: '添加上映', to: '/movie/create' },
     ],
   },
   {
@@ -44,14 +44,6 @@ const customAsideNavs = [
       { text: '用户列表', to: '/user/list' },
       { text: '添加用户', to: '/user/create' },
       { text: '修改密码', to: '/user/pwd' },
-    ],
-  },
-  {
-    text: '通用设置',
-    to: '/setting',
-    icon: 'shezhi',
-    children: [
-      { text: '基础设置', to: '/setting/basic' },
     ],
   },
 ];

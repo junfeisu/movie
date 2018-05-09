@@ -61,13 +61,13 @@ export default class ContentEditor extends Component {
           onChange={this.formChange}
         >
           <IceContainer>
-            <h2 style={styles.title}>添加文章</h2>
+            <h2 style={styles.title}>添加上映</h2>
             <Form labelAlign="top" style={styles.form}>
               <Row>
                 <Col span="11">
-                  <FormItem label="标题" required>
+                  <FormItem label="电影" required>
                     <IceFormBinder name="title" required message="标题必填">
-                      <Input placeholder="这里填写文章标题" />
+                      <Input placeholder="这里填写电影" />
                     </IceFormBinder>
                     <IceFormError name="title" />
                   </FormItem>
@@ -75,13 +75,13 @@ export default class ContentEditor extends Component {
               </Row>
               <Row>
                 <Col span="11">
-                  <FormItem label="作者" required>
+                  <FormItem label="电影院" required>
                     <IceFormBinder
                       name="author"
                       required
-                      message="作者信息必填"
+                      message="电影院必填"
                     >
-                      <Input placeholder="填写作者名称" />
+                      <Input placeholder="填写上映影院" />
                     </IceFormBinder>
                     <IceFormError name="author" />
                   </FormItem>
@@ -125,19 +125,14 @@ export default class ContentEditor extends Component {
                   </FormItem>
                 </Col>
               </Row>
-              <FormItem label="描述">
+              <FormItem label="电影简介">
                 <IceFormBinder name="desc">
-                  <Input multiple placeholder="这里填写正文描述" />
-                </IceFormBinder>
-              </FormItem>
-              <FormItem label="正文" required>
-                <IceFormBinder name="body">
-                  <RichEditor />
+                  <Input multiple placeholder="这里填写电影简介" />
                 </IceFormBinder>
               </FormItem>
               <FormItem label=" ">
                 <Button type="primary" onClick={this.handleSubmit}>
-                  发布文章
+                  发布上映管理
                 </Button>
               </FormItem>
             </Form>
