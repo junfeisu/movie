@@ -69,9 +69,10 @@ export default class SettingsForm extends Component {
           Toastr.info(errors[0].message)
         }
       } else {
-        values.region = [values.region]
-        values.directors = values.directors.trim().split(/\s+/)
-        values.actors = values.actors.trim().split(/\s+/)
+        values.region = values.region instanceof Array ?  [values.region] : values.region
+        values.language = values.language instanceof Array ? [values.language] : values.language
+        values.directors = values.directors instanceof Array ? values.directors : values.directors.trim().split(/\s+/)
+        values.actors = values.actors instanceof Array ? values.directors : values.actors.trim().split(/\s+/)
 
         const imageUrl = await fetch({
           url: '/upload/download',
@@ -89,16 +90,7 @@ export default class SettingsForm extends Component {
        const result = await fetch({
          url: '/movie/add',
          method: 'POST',
-         data: {
-           zh_name: zh_name,
-           language: language,
-           genres: genres,
-           runtime: runtime,
-           region: region,
-           image: image,
-           directors: directors,
-           actors: actors
-         }
+         data: values
        })
 
        if (result.status) {
