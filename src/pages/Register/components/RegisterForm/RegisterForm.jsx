@@ -10,7 +10,7 @@ import {
 import IceIcon from '@icedesign/icon';
 import fetch from '../../../../fetch';
 import toastr from 'toastr';
-import './UserLogin.scss';
+import './RegisterForm.scss';
 
 const { Row, Col } = Grid;
 
@@ -18,7 +18,7 @@ const { Row, Col } = Grid;
 const backgroundImage =
   'https://img.alicdn.com/tfs/TB1zsNhXTtYBeNjy1XdXXXXyVXa-2252-1500.png';
 
-export default class UserLogin extends Component {
+export default class Register extends Component {
   static displayName = 'UserLogin';
 
   static propTypes = {};
@@ -30,31 +30,30 @@ export default class UserLogin extends Component {
     this.state = {
       username: undefined,
       password: undefined,
-      checkbox: false,
+      phone: undefined,
     };
   }
 
-  login = async (e) => {
+  register = async (e) => {
     e.preventDefault()
 
-    const { username, password } = this.state
+    const { username, password, phone } = this.state
     try {
-      if (username && password) {
-        const loginResult = await fetch({
-          url: '/user/login',
+      if (username && password && phone) {
+        const registerResult = await fetch({
+          url: '/user/add',
           method: 'POST',
           data: {
             username: username,
-            password: password
+            password: password,
+            phone: phone
           }
         })
-        console.log(loginResult.data)
-        const { data, message, status } = loginResult
+        console.log(registerResult.data)
+        const { data, status } = registerResult
         if (status) {
-          window.sessionStorage.setItem('user', JSON.stringify(data))
-          hashHistory.push('/');
-        } else {
-          toastr.error(message)
+          toastr.success("注册成功，前去登录")
+          hashHistory.push("login")
         }
       } else {
         toastr.info("用户名，密码都不能为空")
@@ -68,7 +67,7 @@ export default class UserLogin extends Component {
     }
   }
 
-  componentWillMount () {
+  componentWillMount() {
     window.sessionStorage.removeItem('user')
   }
 
@@ -92,7 +91,7 @@ export default class UserLogin extends Component {
             欢迎使用 <br /> 影院购票选座系统
           </h2>
           <div style={styles.formContainer}>
-            <h4 style={styles.formTitle}>登录</h4>
+            <h4 style={styles.formTitle}>注册</h4>
             <IceFormBinderWrapper
               value={this.state.value}
               onChange={this.formChange}
@@ -111,11 +110,29 @@ export default class UserLogin extends Component {
                         this.setState({
                           username: val
                         })
-                      }}/>
+                      }} />
                     </IceFormBinder>
                   </Col>
                   <Col>
                     <IceFormError name="account" />
+                  </Col>
+                </Row>
+                
+                <Row style={styles.formItem}>
+                  <Col>
+                    <IceIcon
+                      type="phone"
+                      size="small"
+                      style={styles.inputIcon}
+                    />
+                    <IceFormBinder name="phone" required message="必填">
+                      <Input htmlType="text" placeholder="手机号" onChange={(val, evt) => {
+                        this.setState({ phone: val })
+                      }} />
+                    </IceFormBinder>
+                  </Col>
+                  <Col>
+                    <IceFormError name="phone" />
                   </Col>
                 </Row>
 
@@ -127,9 +144,9 @@ export default class UserLogin extends Component {
                       style={styles.inputIcon}
                     />
                     <IceFormBinder name="password" required message="必填">
-                      <Input htmlType="password" placeholder="密码" onChange={(val ,evt) => {
-                        this.setState({password: val})
-                      }}/>
+                      <Input htmlType="password" placeholder="密码" onChange={(val, evt) => {
+                        this.setState({ password: val })
+                      }} />
                     </IceFormBinder>
                   </Col>
                   <Col>
@@ -140,16 +157,16 @@ export default class UserLogin extends Component {
                 <Row style={styles.formItem}>
                   <Button
                     type="primary"
-                    onClick={this.login}
+                    onClick={this.register}
                     style={styles.submitBtn}
                   >
-                    登 录
+                    注册
                   </Button>
                 </Row>
 
                 <Row className="tips" style={styles.tips}>
-                  <Link to="/register" style={styles.link}>
-                    立即注册
+                  <Link to="login" style={styles.link}>
+                    立即登录
                   </Link>
                 </Row>
               </div>

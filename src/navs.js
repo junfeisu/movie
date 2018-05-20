@@ -1,6 +1,6 @@
 // <!-- auto generated navs start -->
 const autoGenHeaderNavs = [];
-const autoGenAsideNavs = [];
+const autoGenAsideNavs = [{ text: 'Nav16', to: '/register', icon: 'nav-list' }];
 
 // <!-- auto generated navs end -->
 
@@ -32,8 +32,8 @@ const customAsideNavs = [
     to: '/movie',
     icon: 'cascades',
     children: [
-      { text: '上映列表', to: '/movie/list' },
-      { text: '添加上映', to: '/movie/create' },
+      { text: '电影列表', to: '/movie/list' },
+      { text: '添加电影', to: '/movie/create' },
     ],
   },
   {

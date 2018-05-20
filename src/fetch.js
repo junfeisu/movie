@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const fetch = ({ host = 'http://192.168.2.198:8000', url = '', method = 'GET', data = {}, params = {} }) => {
+const fetch = ({ host = 'http://localhost:8000', url = '', method = 'GET', data = {}, params = {} }) => {
     return new Promise((resolve, reject) => {
         axios.request({
             url: host + url,

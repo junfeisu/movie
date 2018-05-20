@@ -43,15 +43,16 @@ export default class SettingsForm extends Component {
     super(props);
     this.state = {
       value: {
-        zh_name: '',
+        zh_name: '中国少年',
         language: '中文',
-        runtime: '',
+        runtime: '107分钟',
         image: '',
-        genres: [],
-        region: '',
-        directors: '',
-        actors: '',
+        genres: ['剧情', '喜剧'],
+        region: '中国',
+        directors: '导演1',
+        actors: '主演1 主演2 主演3 ',
       },
+      token: ''
     };
   }
 
@@ -63,21 +64,63 @@ export default class SettingsForm extends Component {
 
   validateAllFormField = () => {
     this.refs.form.validateAll(async (errors, values) => {
-      if (errors && errors.length) {
-        Toastr.info(errors[0].message)
+      if (errors) {
+        if (errors.length) {
+          Toastr.info(errors[0].message)
+        }
       } else {
         values.region = [values.region]
-        value.directors = value.directors.trim().split('\s')
-        value.actors = value.actors.trim().split('\s')
+        values.directors = values.directors.trim().split(/\s+/)
+        values.actors = values.actors.trim().split(/\s+/)
+
+        const imageUrl = await fetch({
+          url: '/upload/download',
+          method: 'POST',
+          data: {
+            domain: 'http://owu5dbb9y.bkt.clouddn.com',
+            key: values.image.file.name
+          }
+        })
+
+        values.image = imageUrl.url
 
         const { zh_name, language, genres, runtime, region, image, directors, actors } = values
 
        const result = await fetch({
-         url: '/'
+         url: '/movie/add',
+         method: 'POST',
+         data: {
+           zh_name: zh_name,
+           language: language,
+           genres: genres,
+           runtime: runtime,
+           region: region,
+           image: image,
+           directors: directors,
+           actors: actors
+         }
        })
+
+       if (result.status) {
+        Toastr.success("添加成功")
+       }
       }
     });
   };
+
+  getUploadToken = async () => {
+    const result = await fetch({
+      url: '/upload/up'
+    })
+
+    this.setState({
+      token: result.uploadToken
+    })
+  }
+
+  componentWillMount () {
+    this.getUploadToken()
+  }
 
   render() {
     return (
@@ -110,13 +153,17 @@ export default class SettingsForm extends Component {
                 <Col xxs="16" s="10" l="6">
                   <IceFormBinder name="image" required message="必填">
                     <ImageUpload
-                      listType="picture-card"
+                      listType="text"
+                      action="http://upload.qiniu.com"
                       accept="image/png, image/jpg, image/jpeg, image/gif, image/bmp"
                       locale={{
                         image: {
                           cancel: '取消上传',
                           addPhoto: '上传图片',
                         },
+                      }}
+                      data={{
+                        token: this.state.token
                       }}
                       beforeUpload={beforeUpload}
                       onChange={onChange}
