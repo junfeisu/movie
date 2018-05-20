@@ -1,6 +1,6 @@
 // <!-- auto generated navs start -->
 const autoGenHeaderNavs = [];
-const autoGenAsideNavs = [{ text: 'Nav16', to: '/register', icon: 'nav-list' }];
+const autoGenAsideNavs = [];
 
 // <!-- auto generated navs end -->
 

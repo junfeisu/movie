@@ -16,8 +16,8 @@ export default class CateList extends Component {
 
   render() {
     const breadcrumb = [
-      { text: '分类管理', link: '' },
-      { text: '分类列表', link: '#/cate/list' },
+      { text: '电影管理', link: '' },
+      { text: '电影列表', link: '#/movie/list' },
     ];
     return (
       <div className="cate-list-page">

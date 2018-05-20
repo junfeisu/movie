@@ -3,49 +3,10 @@ import IceContainer from '@icedesign/container';
 import CustomTable from './components/CustomTable';
 import EditDialog from './components/EditDialog';
 import DeleteBalloon from './components/DeleteBalloon';
-
-const MOCK_DATA = [
-  {
-    name: '前端',
-    shortName: 'frontEnd',
-    articleNum: '2',
-  },
-  {
-    name: '后端',
-    shortName: 'backEnd',
-    articleNum: '3',
-  },
-  {
-    name: '开发工具',
-    shortName: 'tool',
-    articleNum: '10',
-  },
-  {
-    name: '数据库',
-    shortName: 'database',
-    articleNum: '26',
-  },
-  {
-    name: '系统',
-    shortName: 'system',
-    articleNum: '18',
-  },
-  {
-    name: '服务器',
-    shortName: 'server',
-    articleNum: '6',
-  },
-  {
-    name: '框架',
-    shortName: 'framework',
-    articleNum: '39',
-  },
-  {
-    name: '其他',
-    shortName: 'other',
-    articleNum: '52',
-  },
-];
+import fetch from '../../../../fetch';
+import Toastr from 'toastr';
+import { Pagination } from '@icedesign/base';
+import './TabTable.scss'
 
 export default class TabTable extends Component {
   static displayName = 'TabTable';
@@ -57,26 +18,38 @@ export default class TabTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSource: MOCK_DATA,
+      current: 1,
+      movies: [],
+      total: 1
     };
     this.columns = [
       {
-        title: '名称',
-        dataIndex: 'name',
-        key: 'name',
+        title: '电影名',
+        dataIndex: 'zh_name',
+        key: 'zh_name',
         width: 150,
       },
       {
-        title: '缩写名',
-        dataIndex: 'shortName',
-        key: 'shortName',
+        title: '片长',
+        dataIndex: 'runtime',
+        key: 'runtime',
         width: 150,
       },
       {
-        title: '文章数',
+        title: '导演',
         width: 150,
-        dataIndex: 'articleNum',
-        key: 'articleNum',
+        dataIndex: 'directors',
+        render: (value, index, record) => {
+          return (
+            record.directors.map(value => {
+              if (value.name) {
+                return value.name + ' '
+              } else {
+                return value + ' '
+              }
+            })
+          )
+        }
       },
       {
         title: '操作',
@@ -100,20 +73,57 @@ export default class TabTable extends Component {
     ];
   }
 
-  getFormValues = (dataIndex, values) => {
-    const { dataSource } = this.state;
-    dataSource[dataIndex] = values;
+  handleChange = (current) => {
     this.setState({
-      dataSource,
+      current
+    }, this.getMvoieList)
+  }
+
+  getMvoieList = async () => {
+    const { current } = this.state
+    const result = await fetch({
+      url: '/movie/list',
+      method: 'POST',
+      data: {
+        pageNum: current
+      }
+    })
+
+    this.setState({
+      movies: result.movies,
+      total: result.total
+    })
+  }
+
+  componentWillMount () {
+    this.getMvoieList()
+  }
+
+  getFormValues = (dataIndex, values) => {
+    const { movies } = this.state;
+    movies[dataIndex] = values;
+    this.setState({
+      movies,
     });
   };
 
-  handleRemove = (value, index) => {
-    const { dataSource } = this.state;
-    dataSource.splice(index, 1);
-    this.setState({
-      dataSource,
-    });
+  handleRemove = async (value, index, record) => {
+    const { movies } = this.state;
+
+    const deleteResult = await fetch({
+      url: '/movie/delete',
+      method: 'POST',
+      data: {
+        movie_id: record._id
+      }
+    })
+
+    if (deleteResult.status) {
+      movies.splice(index, 1);
+      this.setState({
+        movies,
+      });
+    }
   };
 
   render() {
@@ -121,11 +131,12 @@ export default class TabTable extends Component {
       <div className="tab-table">
         <IceContainer>
           <CustomTable
-            dataSource={this.state.dataSource}
+            dataSource={this.state.movies}
             columns={this.columns}
             hasBorder={false}
           />
         </IceContainer>
+        <Pagination total={this.state.total} current={this.state.current} onChange={this.handleChange} />
       </div>
     );
   }

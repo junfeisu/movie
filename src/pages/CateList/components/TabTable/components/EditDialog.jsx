@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { Dialog, Button, Form, Input, Field } from '@icedesign/base';
+import { copy } from 'mi-elegant';
+import Toastr from 'toastr';
+import fetch from '../../../../../fetch';
 
 const FormItem = Form.Item;
 
@@ -18,17 +21,29 @@ export default class EditDialog extends Component {
   }
 
   handleSubmit = () => {
-    this.field.validate((errors, values) => {
+    this.field.validate(async (errors, values) => {
       if (errors) {
         console.log('Errors in form!!!');
         return;
       }
 
-      const { dataIndex } = this.state;
-      this.props.getFormValues(dataIndex, values);
-      this.setState({
-        visible: false,
-      });
+      values.directors = values.directors.trim().split(/\s/)
+
+      const result = await fetch({
+        url: '/movie/update',
+        method: 'POST',
+        data: values
+      })
+
+      if (result.status) {
+        const { dataIndex } = this.state;
+        this.props.getFormValues(dataIndex, values);
+        this.setState({
+          visible: false,
+        });
+      } else {
+        Toastr.error("修改失败")
+      }
     });
   };
 
@@ -46,9 +61,31 @@ export default class EditDialog extends Component {
     });
   };
 
+  arrayToString = (arr, key) => {
+    let string = ''
+    if (key) {
+      arr.map(value => {
+        if (value[key]) {
+          string += value[key] + ' '
+        } else {
+          string += value + ' '
+        }
+      })
+    } else {
+      arr.map(value => {
+        string += value + ' '
+      })
+    }
+
+    return string
+  }
+
   render() {
     const init = this.field.init;
     const { index, record } = this.props;
+    const copyRecord = copy(record)
+    copyRecord.directors = this.arrayToString(copyRecord.directors, 'name')
+    
     const formItemLayout = {
       labelCol: {
         fixedSpan: 6,
@@ -63,7 +100,7 @@ export default class EditDialog extends Component {
         <Button
           size="small"
           type="primary"
-          onClick={() => this.onOpen(index, record)}
+          onClick={() => this.onOpen(index, copyRecord)}
         >
           编辑
         </Button>
@@ -77,26 +114,25 @@ export default class EditDialog extends Component {
           title="编辑"
         >
           <Form direction="ver" field={this.field}>
-            <FormItem label="名称：" {...formItemLayout}>
+            <FormItem label="电影名：" {...formItemLayout}>
               <Input
-                {...init('name', {
+                {...init('zh_name', {
                   rules: [{ required: true, message: '必填选项' }],
                 })}
               />
             </FormItem>
 
-            <FormItem label="缩写名：" {...formItemLayout}>
+            <FormItem label="片长：" {...formItemLayout}>
               <Input
-                {...init('shortName', {
+                {...init('runtime', {
                   rules: [{ required: true, message: '必填选项' }],
                 })}
               />
             </FormItem>
 
-            <FormItem label="文章数：" {...formItemLayout}>
+            <FormItem label="导演：" {...formItemLayout}>
               <Input
-                disabled
-                {...init('articleNum', {
+                {...init('directors', {
                   rules: [{ required: true, message: '必填选项' }],
                 })}
               />
