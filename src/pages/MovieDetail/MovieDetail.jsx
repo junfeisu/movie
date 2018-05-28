@@ -5,6 +5,7 @@ import { hashHistory } from 'react-router';
 import Toastr from 'toastr';
 import fetch from '../../fetch';
 import FeedList from './components/FeedList';
+import { format } from 'mi-elegant';
 
 export default class MovieDetail extends Component {
   static displayName = 'MovieDetail';
@@ -36,6 +37,9 @@ export default class MovieDetail extends Component {
       data: {
         movie: this.props.params.movieId
       }
+    })
+    result.data.forEach(val => {
+      val.time = format.formatDate(val.time, 'yyyy-mm-dd hh:mm')
     })
 
     if (result.data.length) {

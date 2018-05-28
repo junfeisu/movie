@@ -14,8 +14,8 @@ export default class PostList extends Component {
 
   render() {
     const breadcrumb = [
-      { text: '文章管理', link: '' },
-      { text: '文章列表', link: '#/post/list' },
+      { text: '上映管理', link: '' },
+      { text: '上映列表', link: '#/post/list' },
     ];
     return (
       <div className="post-list-page">

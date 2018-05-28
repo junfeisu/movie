@@ -1,19 +1,10 @@
 import React, { Component } from 'react';
 import IceContainer from '@icedesign/container';
-import { Tab } from '@icedesign/base';
-import axios from 'axios';
 import CustomTable from './components/CustomTable';
 import EditDialog from './components/EditDialog';
 import DeleteBalloon from './components/DeleteBalloon';
-
-const TabPane = Tab.TabPane;
-
-const tabs = [
-  { tab: '全部', key: 'all' },
-  { tab: '已发布', key: 'released' },
-  { tab: '审核中', key: 'review' },
-  { tab: '已拒绝', key: 'rejected' },
-];
+import fetch from '../../../../fetch'
+import { format } from 'mi-elegant'
 
 export default class TabTable extends Component {
   static displayName = 'TabTable';
@@ -25,32 +16,31 @@ export default class TabTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSource: {},
-      tabKey: 'all',
+      dataSource: [],
     };
     this.columns = [
       {
-        title: '标题',
-        dataIndex: 'title',
+        title: '上映电影',
         key: 'title',
         width: 200,
+        render: (value, index, record) => {
+          return (
+            <span>
+              {record.movieInfo.zh_name}
+            </span>
+          )
+        }
       },
       {
-        title: '作者',
-        dataIndex: 'author',
-        key: 'author',
+        title: '票价',
+        dataIndex: 'price',
+        key: 'price',
         width: 150,
       },
       {
-        title: '状态',
-        dataIndex: 'status',
-        key: 'status',
-        width: 150,
-      },
-      {
-        title: '发布时间',
-        dataIndex: 'date',
-        key: 'date',
+        title: '上映时间',
+        dataIndex: 'time',
+        key: 'time',
         width: 150,
       },
       {
@@ -75,22 +65,33 @@ export default class TabTable extends Component {
     ];
   }
 
-  componentDidMount() {
-    axios
-      .get('/mock/tab-table.json')
-      .then((response) => {
-        this.setState({
-          dataSource: response.data.data,
-        });
+  getArrangeList = async () => {
+    const result = await fetch({
+      url: '/arrange/search',
+      method: 'POST',
+      data: {}
+    })
+    if (result.status) {
+      result.data.forEach(value => {
+        value.time = format.formatDate(value.time, 'yyyy-mm-dd HH:mm')
+        value.movieInfo = value.movie
+        value.movie = value.movie._id
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      this.setState({
+        dataSource: result.data
+      })
+    } else {
+      toastr.info('获取数据失败')
+    }
+  }
+
+  componentDidMount() {
+    this.getArrangeList()
   }
 
   getFormValues = (dataIndex, values) => {
-    const { dataSource, tabKey } = this.state;
-    dataSource[tabKey][dataIndex] = values;
+    const { dataSource } = this.state;
+    dataSource[dataIndex] = values;
     this.setState({
       dataSource,
     });
@@ -98,15 +99,9 @@ export default class TabTable extends Component {
 
   handleRemove = (value, index) => {
     const { dataSource, tabKey } = this.state;
-    dataSource[tabKey].splice(index, 1);
+    dataSource.splice(index, 1);
     this.setState({
       dataSource,
-    });
-  };
-
-  handleTabChange = (key) => {
-    this.setState({
-      tabKey: key,
     });
   };
 
@@ -115,19 +110,11 @@ export default class TabTable extends Component {
     return (
       <div className="tab-table">
         <IceContainer style={{ padding: '0 20px 20px' }}>
-          <Tab onChange={this.handleTabChange}>
-            {tabs.map((item) => {
-              return (
-                <TabPane tab={item.tab} key={item.key}>
-                  <CustomTable
-                    dataSource={dataSource[this.state.tabKey]}
-                    columns={this.columns}
-                    hasBorder={false}
-                  />
-                </TabPane>
-              );
-            })}
-          </Tab>
+          <CustomTable
+            dataSource={dataSource}
+            columns={this.columns}
+            hasBorder={false}
+          />
         </IceContainer>
       </div>
     );

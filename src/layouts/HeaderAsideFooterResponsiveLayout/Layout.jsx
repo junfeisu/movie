@@ -31,7 +31,8 @@ export default class HeaderAsideFooterResponsiveLayout extends Component {
       openDrawer: false,
       isScreen: undefined,
       openKeys,
-      user: null
+      user: null,
+      showAside: false
     };
     this.openKeysCache = openKeys;
   }
@@ -42,6 +43,11 @@ export default class HeaderAsideFooterResponsiveLayout extends Component {
       this.setState({
         user: user
       })
+      if (user.role === 'admin') {
+        this.setState({
+          showAside: true
+        })
+      }
     }
   }
 
@@ -176,97 +182,99 @@ export default class HeaderAsideFooterResponsiveLayout extends Component {
           {this.state.openDrawer && (
             <div className="open-drawer-bg" onClick={this.toggleMenu} />
           )}
-          <Layout.Aside
-            width="auto"
-            theme={theme}
-            className={cx('ice-design-layout-aside', {
-              'open-drawer': this.state.openDrawer,
-            })}
-          >
-            {/* 侧边菜单项 begin */}
-            {this.state.isScreen !== 'isMobile' && (
-              <a className="collapse-btn" onClick={this.toggleCollapse}>
-                <Icon
-                  type={this.state.collapse ? 'arrow-right' : 'arrow-left'}
-                  size="small"
-                />
-              </a>
-            )}
-            {this.state.isScreen === 'isMobile' && <Logo />}
-            <Menu
-              style={{ width: this.state.collapse ? 60 : 200 }}
-              inlineCollapsed={this.state.collapse}
-              mode="inline"
-              selectedKeys={[pathname]}
-              openKeys={this.state.openKeys}
-              defaultSelectedKeys={[pathname]}
-              onOpenChange={this.onOpenChange}
-              onClick={this.onMenuClick}
-            >
-              {asideNavs &&
-                asideNavs.length > 0 &&
-                asideNavs.map((nav, index) => {
-                  if (nav.children && nav.children.length > 0) {
-                    return (
-                      <SubMenu
-                        key={index}
-                        title={
-                          <span>
-                            {nav.icon ? (
-                              <FoundationSymbol size="small" type={nav.icon} />
-                            ) : null}
-                            <span className="ice-menu-collapse-hide">
-                              {nav.text}
-                            </span>
-                          </span>
-                        }
-                      >
-                        {nav.children.map((item) => {
-                          const linkProps = {};
-                          if (item.newWindow) {
-                            linkProps.href = item.to;
-                            linkProps.target = '_blank';
-                          } else if (item.external) {
-                            linkProps.href = item.to;
-                          } else {
-                            linkProps.to = item.to;
-                          }
-                          return (
-                            <MenuItem key={item.to}>
-                              <Link {...linkProps}>{item.text}</Link>
-                            </MenuItem>
-                          );
-                        })}
-                      </SubMenu>
-                    );
-                  }
-                  const linkProps = {};
-                  if (nav.newWindow) {
-                    linkProps.href = nav.to;
-                    linkProps.target = '_blank';
-                  } else if (nav.external) {
-                    linkProps.href = nav.to;
-                  } else {
-                    linkProps.to = nav.to;
-                  }
-                  return (
-                    <MenuItem key={nav.to}>
-                      <Link {...linkProps}>
-                        <span>
-                          {nav.icon ? (
-                            <FoundationSymbol size="small" type={nav.icon} />
-                          ) : null}
-                          <span className="ice-menu-collapse-hide">
-                            {nav.text}
-                          </span>
-                        </span>
-                      </Link>
-                    </MenuItem>
-                  );
+          {
+            this.state.showAside ?
+              <Layout.Aside
+                width="auto"
+                theme={theme}
+                className={cx('ice-design-layout-aside', {
+                  'open-drawer': this.state.openDrawer,
                 })}
-            </Menu>
-            {/* 侧边菜单项 end */}
-          </Layout.Aside>
+              >
+                {/* 侧边菜单项 begin */}
+                {this.state.isScreen !== 'isMobile' && (
+                  <a className="collapse-btn" onClick={this.toggleCollapse}>
+                    <Icon
+                      type={this.state.collapse ? 'arrow-right' : 'arrow-left'}
+                      size="small"
+                    />
+                  </a>
+                )}
+                {this.state.isScreen === 'isMobile' && <Logo />}
+                <Menu
+                  style={{ width: this.state.collapse ? 60 : 200 }}
+                  inlineCollapsed={this.state.collapse}
+                  mode="inline"
+                  selectedKeys={[pathname]}
+                  openKeys={this.state.openKeys}
+                  defaultSelectedKeys={[pathname]}
+                  onOpenChange={this.onOpenChange}
+                  onClick={this.onMenuClick}
+                >
+                  {asideNavs &&
+                    asideNavs.length > 0 &&
+                    asideNavs.map((nav, index) => {
+                      if (nav.children && nav.children.length > 0) {
+                        return (
+                          <SubMenu
+                            key={index}
+                            title={
+                              <span>
+                                {nav.icon ? (
+                                  <FoundationSymbol size="small" type={nav.icon} />
+                                ) : null}
+                                <span className="ice-menu-collapse-hide">
+                                  {nav.text}
+                                </span>
+                              </span>
+                            }
+                          >
+                            {nav.children.map((item) => {
+                              const linkProps = {};
+                              if (item.newWindow) {
+                                linkProps.href = item.to;
+                                linkProps.target = '_blank';
+                              } else if (item.external) {
+                                linkProps.href = item.to;
+                              } else {
+                                linkProps.to = item.to;
+                              }
+                              return (
+                                <MenuItem key={item.to}>
+                                  <Link {...linkProps}>{item.text}</Link>
+                                </MenuItem>
+                              );
+                            })}
+                          </SubMenu>
+                        );
+                      }
+                      const linkProps = {};
+                      if (nav.newWindow) {
+                        linkProps.href = nav.to;
+                        linkProps.target = '_blank';
+                      } else if (nav.external) {
+                        linkProps.href = nav.to;
+                      } else {
+                        linkProps.to = nav.to;
+                      }
+                      return (
+                        <MenuItem key={nav.to}>
+                          <Link {...linkProps}>
+                            <span>
+                              {nav.icon ? (
+                                <FoundationSymbol size="small" type={nav.icon} />
+                              ) : null}
+                              <span className="ice-menu-collapse-hide">
+                                {nav.text}
+                              </span>
+                            </span>
+                          </Link>
+                        </MenuItem>
+                      );
+                    })}
+                </Menu>
+                {/* 侧边菜单项 end */}
+              </Layout.Aside> : null}
           {/* 主体内容 */}
           <Layout.Main>{this.props.children}</Layout.Main>
         </Layout.Section>

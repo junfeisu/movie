@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Balloon, Icon } from '@icedesign/base';
+import { Balloon, Icon, Input } from '@icedesign/base';
 import IceImg from '@icedesign/img';
 import Layout from '@icedesign/layout';
 import Menu from '@icedesign/menu';
@@ -29,6 +29,7 @@ export default class Header extends PureComponent {
           className="ice-design-layout-header-menu"
           style={{ display: 'flex', alignItems: 'center' }}
         >
+          <Input placeholder="搜索电影" />
           {/* Header 菜单项 begin */}
           {headerNavs && headerNavs.length > 0 ? (
             <Menu mode="horizontal" selectedKeys={[]}>

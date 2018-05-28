@@ -43,7 +43,6 @@ const customAsideNavs = [
     children: [
       { text: '用户列表', to: '/user/list' },
       { text: '添加用户', to: '/user/create' },
-      { text: '修改密码', to: '/user/pwd' },
     ],
   },
 ];

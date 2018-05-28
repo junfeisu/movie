@@ -77,7 +77,7 @@ export default class FeedList extends Component {
           <div style={{display: 'flex', alignItems: 'center'}}>
             <span style={styles.title}>
                 <img src="https://img.alicdn.com/tfs/TB1L6tBXQyWBuNjy0FpXXassXXa-80-80.png" style={styles.avatar} alt="avatar" />
-                {item.username} 发布了一个评论
+                {item.comment_user.username} 发布了一个评论
             </span>
             <span onClick={() => {
               this.deleteComment(item, idx)
